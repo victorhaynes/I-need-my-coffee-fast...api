@@ -5,9 +5,23 @@ from sqlalchemy import pool
 
 from alembic import context
 
+# ~~~~~ Added Boilerplate for database connection
+import os, sys
+from dotenv import load_dotenv
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+load_dotenv(os.path.join(BASE_DIR, ".env"))
+sys.path.append(BASE_DIR)
+# ~~~~~ Added Boilerplate for database connection
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
+
+# ~~~~~ Added Boilerplate for database connection
+config.set_main_option("sqlalchemy.url", os.environ["DATABASE_URL"])
+# ~~~~~ Added Boilerplate for database connection
+
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -18,7 +32,13 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = None
+
+# ~~~~~ Added Boilerplate for database connection
+# target_metadata = None
+import models
+
+target_metadata = models.Base.metadata
+# ~~~~~ Added Boilerplate for database connection
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

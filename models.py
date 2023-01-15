@@ -7,6 +7,7 @@ from sqlalchemy.sql import func
 Base = declarative_base()
 
 
+
 class Coffee(Base):
     __tablename__ = "coffees"
     id = Column(Integer, primary_key=True, index=True)
@@ -14,7 +15,7 @@ class Coffee(Base):
     roast = Column(String)
     time_created = Column(DateTime(timezone=True), server_default=func.now())
     time_updated = Column(DateTime(timezone=True), onupdate=func.now())
-    roaster_id = Column(Integer, ForeignKey("roaster.id"))
+    roaster_id = Column(Integer, ForeignKey("roasters.id"))
 
     roaster = relationship("Roaster")
 
