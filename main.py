@@ -10,9 +10,11 @@ import os
 from fastapi_sqlalchemy import DBSessionMiddleware, db
 from models import Coffee
 from models import Roaster
+from models import User
 
 from schemas import Coffee as SchemaCoffee
 from schemas import Roaster as SchemaRoaster
+from schemas import User as SchemaUser
 
 
 # ~~~ Config ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -40,10 +42,10 @@ def index_coffees():
 
 @app.post("/coffees", response_model=SchemaCoffee, status_code=status.HTTP_201_CREATED)
 def create_coffee(coffee: SchemaCoffee):
-    coffee = Coffee(name=coffee.name, roast=coffee.roast, roaster_id=coffee.roaster_id)
-    db.session.add(coffee)
+    new_coffee = Coffee(name=coffee.name, roast=coffee.roast, roaster_id=coffee.roaster_id)
+    db.session.add(new_coffee)
     db.session.commit()
-    return coffee
+    return new_coffee
 
 
 @app.get("/coffees/{id}", status_code=status.HTTP_200_OK)
@@ -56,13 +58,13 @@ def show_coffee(id: int):
     
 
 @app.put("/coffees/{id}", response_model=SchemaCoffee, status_code=status.HTTP_202_ACCEPTED)
-def update_coffee(id: int, new_coffee: SchemaCoffee):
-    coffee = db.session.query(Coffee).get(id)
-    coffee.name = new_coffee.name
-    coffee.roast = new_coffee.roast
-    coffee.roaster_id = new_coffee.roaster_id
+def update_coffee(id: int, coffee: SchemaCoffee):
+    updated_coffee = db.session.query(Coffee).get(id)
+    updated_coffee.name = coffee.name
+    updated_coffee.roast = coffee.roast
+    updated_coffee.roaster_id = coffee.roaster_id
     db.session.commit()
-    return coffee
+    return updated_coffee
 
 
 @app.delete("/coffees/{id}", status_code=status.HTTP_202_ACCEPTED)
@@ -89,10 +91,10 @@ def index_roasters():
 
 @app.post("/roasters", response_model=SchemaRoaster, status_code=status.HTTP_201_CREATED)
 def create_roaster(roaster: SchemaRoaster):
-    roaster = Roaster(name=roaster.name)
-    db.session.add(roaster)
+    new_roaster = Roaster(name=roaster.name)
+    db.session.add(new_roaster)
     db.session.commit()
-    return roaster
+    return new_roaster
 
 
 @app.get("/roasters/{id}", status_code=status.HTTP_200_OK)
@@ -105,11 +107,11 @@ def show_roaster(id: int):
 
 
 @app.put("/roasters/{id}", response_model=SchemaRoaster, status_code=status.HTTP_202_ACCEPTED)
-def update_rosater(id: int, new_roaster: SchemaRoaster):
-    roaster = db.session.query(Roaster).get(id)
-    roaster.name = new_roaster.name
-    db.session.commit()
-    return roaster
+def update_rosater(id: int, roaster: SchemaRoaster):
+    updated_roaster = db.session.query(Roaster).get(id)
+    updated_roaster.name = roaster.name
+    db.session.commit(updated_roaster)
+    return updated_roaster
 
 
 @app.delete("/roasters/{id}", status_code=status.HTTP_202_ACCEPTED)
@@ -126,6 +128,17 @@ def show_roaster_coffees(id: int):
     return roaster.coffees
 
 
+### User Routes
+### User Routes
+### User Routes
+
+@app.post("/users", response_model=SchemaUser, status_code=status.HTTP_201_CREATED)
+def create_user(user: SchemaUser):
+    new_user = User(username=user.username, email=user.email, password=user.password)
+    db.session.add(new_user)
+    db.session.commit()
+    return new_user
+
 # Run locally, outside of container from /.venv -> $ python main.py
-# if __name__ == "__main__":
-#     uvicorn.run(app, host="0.0.0.0", port=8000)
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)

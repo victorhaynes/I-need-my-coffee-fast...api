@@ -30,11 +30,11 @@ class Roaster(Base):
     coffees = relationship("Coffee", back_populates="roaster")
 
 
-# class User(Base):
-#     __tablename__ = "users"
-#     id = Column(Integer, primary_key=True, index=True)
-#     username = Column(String, nullable=False)
-#     email = Column(String, nullable=False)
-#     password = Column(String, nullable=False)
-#     time_created = Column(DateTime(timezone=True), server_default=func.now())
-#     time_updated = Column(DateTime(timezone=True, onupdate=func.now()))
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, nullable=False)
+    email = Column(String, nullable=False)
+    password = Column(String, nullable=False)
+    time_created = Column(DateTime(timezone=True), server_default=func.now())
+    time_updated = Column(DateTime(timezone=True), onupdate=func.now())

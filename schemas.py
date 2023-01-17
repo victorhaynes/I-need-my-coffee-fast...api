@@ -38,7 +38,11 @@ class Roaster(BaseModel):
         return name
 
 
-# class User:
-#     username: str
-#     email: str
-#     password: str
+class User(BaseModel):
+    username: str
+    email: str
+    password: str
+
+    class Config:
+        orm_mode = True
+
