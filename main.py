@@ -23,7 +23,6 @@ app = FastAPI()
 app.add_middleware(DBSessionMiddleware, db_url=os.environ["DATABASE_URL"])
 
 
-
 # ~~~ Routes ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # ~~~ Routes ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # ~~~ Routes ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -53,7 +52,7 @@ def show_coffee(id: int):
     if coffee:
         return coffee
     else:
-        raise HTTPException(status_code=404,detail="Error: Item not found.")
+        raise HTTPException(status_code=404,detail=[{"msg": "Item not found"}])
     
 
 @app.put("/coffees/{id}", response_model=SchemaCoffee, status_code=status.HTTP_202_ACCEPTED)
@@ -83,12 +82,12 @@ def show_coffee_roaster(id: int):
 ### Roaster Routes
 ### Roaster Routes
 ### Roaster Routes
-@app.get("/roasters")
+@app.get("/roasters", status_code=status.HTTP_200_OK)
 def index_roasters():
     return db.session.query(Roaster).all()
 
 
-@app.post("/roasters", response_model=SchemaRoaster)
+@app.post("/roasters", response_model=SchemaRoaster, status_code=status.HTTP_201_CREATED)
 def create_roaster(roaster: SchemaRoaster):
     roaster = Roaster(name=roaster.name)
     db.session.add(roaster)
@@ -96,16 +95,16 @@ def create_roaster(roaster: SchemaRoaster):
     return roaster
 
 
-@app.get("/roasters/{id}")
+@app.get("/roasters/{id}", status_code=status.HTTP_200_OK)
 def show_roaster(id: int):
     roaster = db.session.query(Roaster).get(id)
     if roaster:
         return roaster
     else:
-        raise HTTPException(status_code=404,detail="Error: Item not found.")
+        raise HTTPException(status_code=404,detail=[{"msg": "Item not found"}])
 
 
-@app.put("/roasters/{id}", response_model=SchemaRoaster)
+@app.put("/roasters/{id}", response_model=SchemaRoaster, status_code=status.HTTP_202_ACCEPTED)
 def update_rosater(id: int, new_roaster: SchemaRoaster):
     roaster = db.session.query(Roaster).get(id)
     roaster.name = new_roaster.name
@@ -113,7 +112,7 @@ def update_rosater(id: int, new_roaster: SchemaRoaster):
     return roaster
 
 
-@app.delete("/roasters/{id}")
+@app.delete("/roasters/{id}", status_code=status.HTTP_202_ACCEPTED)
 def delete_roater(id: int):
     roaster = db.session.query(Roaster).get(id)
     db.session.delete(roaster)
