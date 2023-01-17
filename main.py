@@ -28,7 +28,7 @@ app.add_middleware(DBSessionMiddleware, db_url=os.environ["DATABASE_URL"])
 # ~~~ Routes ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 @app.get("/")
 async def root():
-    return {"message": "You are live--on a FastAPI application created by Victor Haynes."}
+    return {"message": "You are live--on a FastAPI application created by Victor Haynes. Navigate to /docs in browser to discover API."}
 
 ### Coffee Routes
 ### Coffee Routes
