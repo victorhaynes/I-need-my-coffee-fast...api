@@ -53,6 +53,13 @@ class User(BaseModel):
         orm_mode = True
 
 
+class LoginDetails(BaseModel):
+    username: str
+    password: str
+
+    class Config:
+        orm_mode = True
+
 # ~~~ Schemas for OUTBOUND processing ~~~~~~~
 # ~~~ Schemas for OUTBOUND processing ~~~~~~~
 # ~~~ Schemas for OUTBOUND processing ~~~~~~~
