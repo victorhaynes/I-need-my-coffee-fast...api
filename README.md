@@ -8,13 +8,13 @@ Additionally:
 - Custom Serializers & attributes
 - JWT for authentication & admin-specific actions
 
+To build:
+- `$ docker-compose up`
 
-Run Migrations in docker:
+To create databse tables run these commands from the project root after building. This will run the alembic commands for the "api" service (the Python-FastAPI application):
 - `$ docker-compose run api alembic revision --autogenerate -m "New Migration"`
 - `$ docker-compose run api alembic upgrade head`
 
-To run:
-- `$ docker-compose up`
 
 Discover this API at URL: /docs:
 
