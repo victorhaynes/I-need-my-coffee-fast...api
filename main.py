@@ -3,6 +3,7 @@
 # ~~~ Imports ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 import uvicorn
 from fastapi import FastAPI, status, HTTPException
+from fastapi_jwt_auth import AuthJWT
 
 from dotenv import load_dotenv
 import os
@@ -17,8 +18,11 @@ from schemas import Roaster as RoasterSchema
 from schemas import User as UserSchema
 from schemas import UserResponse as UserResponseSchema
 from schemas import CoffeeResponse as CoffeeResponseSchema
-from schemas import RoasterResponse as RoasterResponseSchema 
+from schemas import RoasterResponse as RoasterResponseSchema
 
+from seeds import seed_coffees, seed_roasters, seed_users
+
+from pydantic import BaseModel
 
 # ~~~ Config ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # ~~~ Config ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -27,39 +31,26 @@ load_dotenv(".env")
 app = FastAPI()
 app.add_middleware(DBSessionMiddleware, db_url=os.environ["DATABASE_URL"])
 
+# ~~~ Auth Setup ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~ Auth Setup ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~ Auth Setup ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+class Settings(BaseModel):
+    authjwt_secret_key: str = os.environ["JWT_SECRET_KEY"]
 
-# ~~~ Seed Utilities ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# ~~~ Seed Utilities ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# ~~~ Seed Utilities ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def seed_roasters():
-    alma = Roaster(name="Alma")
-    metric = Roaster(name="Metric")
-    sparrows = Roaster(name="Sparrows")
-    dummy_roaster = Roaster(name="Dummy Roaster")
-    db.session.add(alma)
-    db.session.add(metric)
-    db.session.add(sparrows)
-    db.session.add(dummy_roaster)
-    db.session.commit()
+@AuthJWT.load_config
+def get_config():
+    return Settings()
 
 
-def seed_coffees():
-    hp = Coffee(name="Honey Process", roast="Light", roaster_id=db.session.query(Roaster).filter_by(name="Alma").first().id)
-    extra = Coffee(name="Extra", roast="Dark", roaster_id=db.session.query(Roaster).filter_by(name="Alma").first().id)
-    color = Coffee(name="Colorized", roast="Light", roaster_id=db.session.query(Roaster).filter_by(name="Metric").first().id)
-    dimtu = Coffee(name="Dimtu Tero", roast="Medium", roaster_id=db.session.query(Roaster).filter_by(name="Sparrows").first().id)
-    db.session.add(hp)
-    db.session.add(extra)
-    db.session.add(color)
-    db.session.add(dimtu)
-    db.session.commit()
-
-
+# ~~~ Database Management ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~ Database Management ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~ Database Management ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 @app.get("/seed", status_code=status.HTTP_201_CREATED)
 def seed_database():
     seed_roasters()
     seed_coffees()
-    return {"message": "Seeded database with Roasters and Coffees successfully."}
+    seed_users()
+    return {"message": "Seeded database with Roasters, Coffees, Users successfully."}
 
 
 @app.delete("/delete", status_code=status.HTTP_202_ACCEPTED)
@@ -68,7 +59,9 @@ def delete_all_records():
     db.session.commit()
     db.session.query(Roaster).delete()
     db.session.commit()
-    return {"message": "Deleted existing Coffee, Roaster records."}
+    db.session.query(User).delete()
+    db.session.commit()
+    return {"message": "Deleted existing Coffee, Roaster, User records."}
 
 
 # ~~~ Routes / Endpoints ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -125,7 +118,10 @@ def destroy_coffee(id: int):
 @app.get("/coffees/{id}/roaster", response_model=RoasterResponseSchema, status_code=status.HTTP_200_OK)
 def show_coffee_roaster(id: int):
     coffee = db.session.query(Coffee).get(id)
-    return coffee.roaster
+    if coffee:
+        return coffee.roaster
+    else:
+        raise HTTPException(status_code=404,detail=[{"msg": "Item not found"}])
 
 
 ### Roaster Routes
@@ -172,16 +168,17 @@ def delete_roater(id: int):
 @app.get("/roasters/{id}/coffees", response_model=list[CoffeeResponseSchema],status_code=status.HTTP_200_OK)
 def show_roaster_coffees(id: int):
     roaster = db.session.query(Roaster).get(id)
-    return roaster.coffees
-
+    if roaster:
+        return roaster.coffee
+    else:
+        raise HTTPException(status_code=404,detail=[{"msg": "Item not found"}])
 
 ### User Routes
 ### User Routes
 ### User Routes
-
-# @app.get("/users", response_model=UserResponseSchema, status_code=status.HTTP_200_OK)
-# def index_users(user: UserSchema):
-#     new_user
+@app.get("/users", response_model=list[UserResponseSchema], status_code=status.HTTP_200_OK)
+def index_users():
+    return db.session.query(User).all()
 
 @app.post("/users", response_model=UserResponseSchema, status_code=status.HTTP_201_CREATED)
 def create_user(user: UserSchema):
@@ -189,6 +186,15 @@ def create_user(user: UserSchema):
     db.session.add(new_user)
     db.session.commit()
     return new_user
+
+@app.get("/users/{id}", response_model=UserResponseSchema, status_code=status.HTTP_200_OK)
+def show_user(id: int):
+    user = db.session.query(User).get(id)
+    if user:
+        return user
+    else:
+        raise HTTPException(status_code=404,detail=[{"msg": "Item not found"}])
+
 
 # # Run locally, outside of container from /.venv -> $ python main.py
 # if __name__ == "__main__":
