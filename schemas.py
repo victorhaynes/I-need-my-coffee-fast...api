@@ -1,5 +1,5 @@
 from pydantic import BaseModel, validator
-from typing import Optional, List
+from typing import Optional, List, Dict
 from pydantic_computed import Computed, computed
 from fastapi import HTTPException
 from datetime import datetime
@@ -8,6 +8,7 @@ from datetime import datetime
 # ~~~ Schemas for INBOUND processing ~~~~~~~
 # ~~~ Schemas for INBOUND processing ~~~~~~~
 class Coffee(BaseModel):
+    id: Optional[int]
     name: str
     roast: str
     roaster_id: int
@@ -29,7 +30,10 @@ class Coffee(BaseModel):
         return name
 
 
+
+
 class Roaster(BaseModel):
+    id: Optional[int]
     name: str
 
     class Config:
@@ -68,7 +72,7 @@ class CoffeeResponse(BaseModel):
     name: str
     roast: str
     roaster_id: int
-    roaster: Roaster    
+    roaster: Roaster
     time_created: datetime
     time_updated: Optional[datetime]
 

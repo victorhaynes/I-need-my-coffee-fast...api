@@ -33,7 +33,7 @@ class Roaster(Base):
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, nullable=False)
+    username = Column(String, nullable=False, unique=True)
     email = Column(String, nullable=False)
     password = Column(String, nullable=False)
     time_created = Column(DateTime(timezone=True), server_default=func.now())

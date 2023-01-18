@@ -25,16 +25,17 @@ from seeds import seed_coffees, seed_roasters, seed_users
 
 from pydantic import BaseModel
 
-# ~~~ Config ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# ~~~ Config ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# ~~~ Config ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# ~~~ Config & Auth Setup ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~ Config & Auth Setup ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~ Config & Auth Setup ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 load_dotenv(".env")
 app = FastAPI()
 app.add_middleware(DBSessionMiddleware, db_url=os.environ["DATABASE_URL"])
 
-# ~~~ Auth Setup ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# ~~~ Auth Setup ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# ~~~ Auth Setup ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+### JWT Config
+### JWT Config
+### JWT Config
 class Settings(BaseModel):
     authjwt_secret_key: str = os.environ["JWT_SECRET_KEY"]
 
@@ -42,49 +43,33 @@ class Settings(BaseModel):
 def get_config():
     return Settings()
 
-def logged_in(Authorize: AuthJWT=Depends()):
+def jwt_check(Authorize: AuthJWT=Depends()):
     try:
         Authorize.jwt_required()
     except Exception:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=[{"msg": "Invalid authorization token."}])
 
-    user_and_id = Authorize.get_jwt_subject().split(",")
-    return user_and_id
+    authenticated_user_details = Authorize.get_jwt_subject().split(",")
+    return {"username": authenticated_user_details[0], "id": int(authenticated_user_details[1])}
 
-# ~~~ Example Usage ~~~~~~~~~
-# ~~~ Example Usage ~~~~~~~~~
-# ~~~ Example Usage ~~~~~~~~~
-# @app.get("/coffees", response_model=list[CoffeeResponseSchema], status_code=status.HTTP_200_OK,)
-# def index_coffees(Authorize: AuthJWT=Depends()):
-#     if logged_in(Authorize):
-#         return db.session.query(Coffee).all()
+def is_admin(authenticated_user_object: dict) -> bool:
+    try:
+        if authenticated_user_object["username"] == "admin":
+            return True
+        else:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=[{"msg": "Not an admin."}])
 
-
-# ~~~ Database Management ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# ~~~ Database Management ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# ~~~ Database Management ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-@app.get("/seed", status_code=status.HTTP_201_CREATED)
-def seed_database():
-    seed_roasters()
-    seed_coffees()
-    seed_users()
-    return {"message": "Seeded database with Roasters, Coffees, Users successfully."}
-
-
-@app.delete("/delete", status_code=status.HTTP_202_ACCEPTED)
-def delete_all_records():
-    db.session.query(Coffee).delete()
-    db.session.commit()
-    db.session.query(Roaster).delete()
-    db.session.commit()
-    db.session.query(User).delete()
-    db.session.commit()
-    return {"message": "Deleted existing Coffee, Roaster, User records."}
+    except KeyError:
+          raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=[{"msg": "Authorization failed. Please login again."}])
 
 
 # ~~~ Routes / Endpoints ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # ~~~ Routes / Endpoints ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # ~~~ Routes / Endpoints ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+### Root
+### Root
+### Root
 @app.get("/")
 async def root():
     return {"message": "You are live--on a FastAPI application created by Victor Haynes. Navigate to /docs in browser to discover API."}
@@ -113,7 +98,7 @@ def show_coffee(id: int):
         return coffee
     else:
         raise HTTPException(status_code=404,detail=[{"msg": "Item not found"}])
-    
+
 
 @app.put("/coffees/{id}", response_model=CoffeeResponseSchema, status_code=status.HTTP_202_ACCEPTED)
 def update_coffee(id: int, coffee: CoffeeSchema):
@@ -191,12 +176,14 @@ def show_roaster_coffees(id: int):
     else:
         raise HTTPException(status_code=404,detail=[{"msg": "Item not found"}])
 
+
 ### User Routes
 ### User Routes
 ### User Routes
 @app.get("/users", response_model=list[UserResponseSchema], status_code=status.HTTP_200_OK)
 def index_users():
     return db.session.query(User).all()
+
 
 @app.post("/users", response_model=UserResponseSchema, status_code=status.HTTP_201_CREATED)
 def create_user(user: UserSchema):
@@ -205,17 +192,105 @@ def create_user(user: UserSchema):
     db.session.commit()
     return new_user
 
+
 @app.get("/users/{id}", response_model=UserResponseSchema, status_code=status.HTTP_200_OK)
-def show_user(id: int):
+def show_user(id: int, Authorize: AuthJWT=Depends()):
     user = db.session.query(User).get(id)
-    if user:
+    if user and jwt_check(Authorize)["username"]=="admin":
         return user
+    elif user and jwt_check(Authorize)["id"]==id:
+        return user
+    elif user:
+        raise HTTPException(status_code=404,detail=[{"msg": "Not authorized to view other accounts."}])
     else:
         raise HTTPException(status_code=404,detail=[{"msg": "Item not found"}])
 
-### Auth Routes
-### Auth Routes
-### Auth Routes
+
+@app.put("/users/{id}", response_model=UserResponseSchema, status_code=status.HTTP_202_ACCEPTED)
+def update_user(id: int, user: UserSchema, Authorize: AuthJWT=Depends()):
+    updated_user = db.session.query(User).get(id)
+    if updated_user and jwt_check(Authorize)["id"]==id:
+        updated_user.username = user.username
+        updated_user.email = user.email
+        updated_user.password = user.password
+        db.session.commit()
+        return updated_user
+    else:
+        raise HTTPException(status_code=401,detail=[{"msg": "Not authorized to edit other accounts"}])
+
+
+@app.delete("/users/{id}", status_code=status.HTTP_202_ACCEPTED)
+def delete_user(id: int, Authorize: AuthJWT=Depends()):
+    user_to_delete = db.session.query(User).get(id)
+    if user_to_delete and is_admin(jwt_check(Authorize)) and not user_to_delete.username == "admin":
+        db.session.delete(user_to_delete)
+        db.session.commit()
+        return {"message": f"User ID# {id} successfully deleted"}
+    elif user_to_delete and user_to_delete.username == "admin":
+        raise HTTPException(status_code=401,detail=[{"msg": "Not authorized to delete admin accounts. Contact DB Admin."}])
+    else:
+        raise HTTPException(status_code=404,detail=[{"msg": "Item not found"}])
+
+
+# ~~~ Database Management ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~ Database Management ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~ Database Management ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+@app.get("/initialize", status_code=status.HTTP_200_OK)
+def initialize():
+    if db.session.query(User).filter_by(username=os.environ["FASTAPI_ADMIN_USERNAME"]).first():
+        raise HTTPException(status_code=400, detail=[{"msg": "Already Initialized."}])
+    else:
+        admin = User(username=os.environ["FASTAPI_ADMIN_USERNAME"], email=os.environ["FASTAPI_ADMIN_EMAIL"], password=os.environ["FASTAPI_ADMIN_PASSWORD"])
+        db.session.add(admin)
+        db.session.commit()
+        return {"message": "Initialization successful."}
+
+
+@app.get("/seed-all", status_code=status.HTTP_201_CREATED)
+def seed_database(Authorize: AuthJWT=Depends()):
+    if is_admin(jwt_check(Authorize)):
+        seed_roasters()
+        seed_coffees()
+        seed_users()
+        return {"message": "All seeds ran successfully."}
+
+
+@app.get("/seed-roasters", status_code=status.HTTP_201_CREATED)
+def populate_roasters(Authorize: AuthJWT=Depends()):
+    if is_admin(jwt_check(Authorize)):
+        seed_roasters()
+        return {"message": "Seeded database with Roasters successfully."}
+
+
+@app.get("/seed-coffees", status_code=status.HTTP_201_CREATED)
+def populate_coffees(Authorize: AuthJWT=Depends()):
+    if is_admin(jwt_check(Authorize)):
+        seed_coffees()
+        return {"message": "Seeded database with Coffees successfully."}
+
+
+@app.get("/seed-users", status_code=status.HTTP_201_CREATED)
+def populate_users(Authorize: AuthJWT=Depends()):
+    if is_admin(jwt_check(Authorize)):
+        seed_users()
+        return {"message": "Seeded database with Users successfully."}
+
+
+@app.get("/delete-all", status_code=status.HTTP_202_ACCEPTED)
+def delete_all_records(Authorize: AuthJWT=Depends()):
+    if is_admin(jwt_check(Authorize)):
+        db.session.query(Coffee).delete()
+        db.session.commit()
+        db.session.query(Roaster).delete()
+        db.session.commit()
+        db.session.query(User).delete()
+        db.session.commit()
+        return {"message": "Deleted all database records--or no records were found."}
+
+
+# ~~~ Login ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~ Login ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~ Login ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 @app.post("/login")
 def login(user: LoginDetails, Authorize: AuthJWT=Depends(), status_code=status.HTTP_201_CREATED):
     user = db.session.query(User).filter_by(username=user.username).filter_by(password=user.password).first()
@@ -225,6 +300,77 @@ def login(user: LoginDetails, Authorize: AuthJWT=Depends(), status_code=status.H
     else:
         raise HTTPException(status_code=422,detail=[{"msg": "Invalid username or password."}])
 
+
+@app.get("/who-am-i")
+def who_am_i(Authorize: AuthJWT=Depends()):
+    return jwt_check(Authorize)
+
+
+
+
+# Refactored code for refreshing tokens, currently not implemented in client/frontend
+# @app.post("/login")
+# def login(user: LoginDetails, Authorize: AuthJWT=Depends(), status_code=status.HTTP_201_CREATED):
+#     user = db.session.query(User).filter_by(username=user.username).filter_by(password=user.password).first()
+#     if user:
+#         access_token = Authorize.create_access_token(subject=f"{user.username},{user.id}")
+#         refresh_token = Authorize.create_refresh_token(subject=f"{user.username},{user.id}")
+#         return {"access_token": access_token, "refresh_token": refresh_token}
+#     else:
+#         raise HTTPException(status_code=422,detail=[{"msg": "Invalid username or password."}])
+#
+# 
+# @app.get('/new-token')
+# def create_new_token(Authorize: AuthJWT=Depends()):
+#     try:
+#         Authorize.jwt_refresh_token_required()
+#     except Exception:
+#         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=[{"msg": "Invalid authorization token."}])
+
+#     current_user = Authorize.get_jwt_subject()
+#     access_token=Authorize.create_access_token(subject=current_user)
+
+#     return {"new_access_token": access_token}
+
+
+# ~~~ Database Management ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~ Database Management ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~ Database Management ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+@app.get("/seed-all", status_code=status.HTTP_201_CREATED)
+def seed_database():
+    seed_roasters()
+    seed_coffees()
+    seed_users()
+    return {"message": "All seeds ran successfully.."}
+
+
+@app.get("/seed-roasters", status_code=status.HTTP_201_CREATED)
+def populate_roasters():
+    seed_roasters()
+    return {"message": "Seeded database with Roasters successfully."}
+
+
+@app.get("/seed-coffees", status_code=status.HTTP_201_CREATED)
+def populate_coffees():
+    seed_coffees()
+    return {"message": "Seeded database with Coffees successfully."}
+
+
+@app.get("/seed-users", status_code=status.HTTP_201_CREATED)
+def populate_users():
+    seed_users()
+    return {"message": "Seeded database with Users successfully."}
+
+
+@app.delete("/delete-all", status_code=status.HTTP_202_ACCEPTED)
+def delete_all_records():
+    db.session.query(Coffee).delete()
+    db.session.commit()
+    db.session.query(Roaster).delete()
+    db.session.commit()
+    db.session.query(User).delete()
+    db.session.commit()
+    return {"message": "Deleted all database records--or no records were found."}
 
 
 # # Run locally, outside of container from venv -> (venv) $ python main.py
