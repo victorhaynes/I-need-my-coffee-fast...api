@@ -7,6 +7,7 @@ Additionally:
 - JWT for authentication & admin-specific actions
 
 
-Run Migrations in docker
+Run Migrations in docker:
+
 `$ docker-compose run api alembic revision --autogenerate -m "New Migration"`
 `$ docker-compose run api alembic upgrade head`
