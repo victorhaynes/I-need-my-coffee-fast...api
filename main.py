@@ -28,12 +28,56 @@ app = FastAPI()
 app.add_middleware(DBSessionMiddleware, db_url=os.environ["DATABASE_URL"])
 
 
-# ~~~ Routes ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# ~~~ Routes ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# ~~~ Routes ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~ Seed Utilities ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~ Seed Utilities ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~ Seed Utilities ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def seed_roasters():
+    alma = Roaster(name="Alma")
+    metric = Roaster(name="Metric")
+    sparrows = Roaster(name="Sparrows")
+    dummy_roaster = Roaster(name="Dummy Roaster")
+    db.session.add(alma)
+    db.session.add(metric)
+    db.session.add(sparrows)
+    db.session.add(dummy_roaster)
+    db.session.commit()
+
+
+def seed_coffees():
+    hp = Coffee(name="Honey Process", roast="Light", roaster_id=db.session.query(Roaster).filter_by(name="Alma").first().id)
+    extra = Coffee(name="Extra", roast="Dark", roaster_id=db.session.query(Roaster).filter_by(name="Alma").first().id)
+    color = Coffee(name="Colorized", roast="Light", roaster_id=db.session.query(Roaster).filter_by(name="Metric").first().id)
+    dimtu = Coffee(name="Dimtu Tero", roast="Medium", roaster_id=db.session.query(Roaster).filter_by(name="Sparrows").first().id)
+    db.session.add(hp)
+    db.session.add(extra)
+    db.session.add(color)
+    db.session.add(dimtu)
+    db.session.commit()
+
+
+@app.get("/seed", status_code=status.HTTP_201_CREATED)
+def seed_database():
+    seed_roasters()
+    seed_coffees()
+    return {"message": "Seeded database with Roasters and Coffees successfully."}
+
+
+@app.delete("/delete", status_code=status.HTTP_202_ACCEPTED)
+def delete_all_records():
+    db.session.query(Coffee).delete()
+    db.session.commit()
+    db.session.query(Roaster).delete()
+    db.session.commit()
+    return {"message": "Deleted existing Coffee, Roaster records."}
+
+
+# ~~~ Routes / Endpoints ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~ Routes / Endpoints ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~ Routes / Endpoints ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 @app.get("/")
 async def root():
     return {"message": "You are live--on a FastAPI application created by Victor Haynes. Navigate to /docs in browser to discover API."}
+
 
 ### Coffee Routes
 ### Coffee Routes
