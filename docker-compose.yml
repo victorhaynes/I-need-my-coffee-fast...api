@@ -35,3 +35,19 @@ services:
     depends_on:
       - db
     restart: always
+
+  client:
+    container_name: react_app
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+    volumes:
+      - ./client:/client
+    ports:
+      - 3000:3000
+    depends_on:
+      - api
+    restart: always
+
+
+    

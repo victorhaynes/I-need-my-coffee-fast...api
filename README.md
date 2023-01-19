@@ -16,6 +16,6 @@ To create databse tables run these commands from the project root after building
 - `$ docker-compose run api alembic upgrade head`
 
 
-Discover this API at URL: /docs:
+Discover this API at URL port:8000 "/docs":
 
 <img src="./images/FastAPI_docs.jpg" alt="docs page" width="1000" height=auto>
