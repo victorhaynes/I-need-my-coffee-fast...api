@@ -21,3 +21,8 @@ To create databse tables run these commands from the project root after building
 Discover this API at URL port:8000 "/docs":
 
 <img src="./images/FastAPI_docs.jpg" alt="docs page" width="1000" height=auto>
+
+
+React.js Installations
+- Bootstrap `$ npm install react-bootstrap bootstrap`
+- React Router `$ npm install react-router-dom@6`

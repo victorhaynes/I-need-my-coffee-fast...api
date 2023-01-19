@@ -74,8 +74,8 @@ def is_admin(authenticated_user_object: dict) -> bool:
 async def root():
     return {"message": "You are live--on a FastAPI application created by Victor Haynes. Navigate to /docs in browser to discover API."}
 
-@app.get("/test")
-def testing(status_code=status.HTTP_200_OK):
+@app.get("/test",status_code=status.HTTP_200_OK)
+def testing():
     return "React container is connected!"
 
 ### Coffee Routes
