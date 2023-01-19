@@ -1,5 +1,7 @@
 # I-need-my-coffee-fast...api
-A Docker-containerized application with: a RESTFUL FASTApi API, PostgreSQL database, and PGAdmin. Featuring full CRUD on a one-to-many entity relationship (Roaster -< Coffee) created by Victor Haynes
+A Docker-containerized fullstack application with: a RESTFUL FASTApi API, React.js frontend, PostgreSQL database, and PGAdmin.
+
+Featuring full CRUD on a one-to-many entity relationship (Roaster -< Coffee) created by Victor Haynes
 
 <img src="./images/Coffee_ERD.jpg" alt="coffee erd" width="400" height=auto>
 
