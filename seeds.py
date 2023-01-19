@@ -49,25 +49,25 @@ def seed_coffees():
     if db.session.query(Coffee).filter_by(name="Honey Process").first():
         pass
     else:
-        hp = Coffee(name="Honey Process", roast="Light", roaster_id=db.session.query(Roaster).filter_by(name="Alma").first().id)
+        hp = Coffee(name="Honey Process", roast="Light", image_url="https://res.cloudinary.com/roastcollective/image/upload/h_1000,w_1000,f_auto,fl_progressive:steep,q_auto:good/v1660246875/solidus/rr3eqrq9vhru70fw6txc.png", roaster_id=db.session.query(Roaster).filter_by(name="Alma").first().id)
         db.session.add(hp)
 
-    if db.session.query(Coffee).filter_by(name="Extra").first():
+    if db.session.query(Coffee).filter_by(name="Ember").first():
         pass
     else:
-        extra = Coffee(name="Extra", roast="Dark", roaster_id=db.session.query(Roaster).filter_by(name="Alma").first().id)
-        db.session.add(extra)
+        ember = Coffee(name="Ember", roast="Dark", image_url="https://res.cloudinary.com/roastcollective/image/upload/h_1000,w_1000,f_auto,fl_progressive:steep,q_auto:good/v1660236329/solidus/t17drc8sizlr1pqf3aan.png", roaster_id=db.session.query(Roaster).filter_by(name="Alma").first().id)
+        db.session.add(ember)
 
     if db.session.query(Coffee).filter_by(name="Colorized").first():
         pass
     else:
-        color = Coffee(name="Colorized", roast="Light", roaster_id=db.session.query(Roaster).filter_by(name="Metric").first().id)
+        color = Coffee(name="Colorized", roast="Light", image_url="https://res.cloudinary.com/roastcollective/image/upload/h_1000,w_1000,f_auto,fl_progressive:steep,q_auto:good/v1660246010/solidus/zvym78wgknnr26eq9v9u.png", roaster_id=db.session.query(Roaster).filter_by(name="Metric").first().id)
         db.session.add(color)
 
     if db.session.query(Coffee).filter_by(name="Dimtu Tero").first():
         pass
     else:
-        dimtu = Coffee(name="Dimtu Tero", roast="Medium", roaster_id=db.session.query(Roaster).filter_by(name="Sparrows").first().id)
+        dimtu = Coffee(name="Dimtu Tero", roast="Medium", image_url= "https://res.cloudinary.com/roastcollective/image/upload/h_1000,w_1000,f_auto,fl_progressive:steep,q_auto:good/v1609947961/solidus/b4nkmv77gfrlybt7t12z.png", roaster_id=db.session.query(Roaster).filter_by(name="Sparrows").first().id)
         db.session.add(dimtu)
 
     if db.session.new:

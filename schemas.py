@@ -11,6 +11,7 @@ class Coffee(BaseModel):
     id: Optional[int]
     name: str
     roast: str
+    image_url: str
     roaster_id: int
     
     class Config:
@@ -71,6 +72,7 @@ class CoffeeResponse(BaseModel):
     id: int
     name: str
     roast: str
+    image_url: str
     roaster_id: int
     roaster: Roaster
     time_created: datetime

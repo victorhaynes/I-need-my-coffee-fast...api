@@ -74,9 +74,9 @@ def is_admin(authenticated_user_object: dict) -> bool:
 async def root():
     return {"message": "You are live--on a FastAPI application created by Victor Haynes. Navigate to /docs in browser to discover API."}
 
-@app.get("/test",status_code=status.HTTP_200_OK)
+@app.get("/test")
 def testing():
-    return "React container is connected!"
+    raise HTTPException(status_code=409, detail="bad request")
 
 ### Coffee Routes
 ### Coffee Routes
@@ -88,7 +88,7 @@ def index_coffees():
 
 @app.post("/coffees", response_model=CoffeeResponseSchema, status_code=status.HTTP_201_CREATED)
 def create_coffee(coffee: CoffeeSchema):
-    new_coffee = Coffee(name=coffee.name, roast=coffee.roast, roaster_id=coffee.roaster_id)
+    new_coffee = Coffee(name=coffee.name, roast=coffee.roast, image_url= coffee.image_url, roaster_id=coffee.roaster_id)
     db.session.add(new_coffee)
     db.session.commit()
     return new_coffee
@@ -108,6 +108,7 @@ def update_coffee(id: int, coffee: CoffeeSchema):
     updated_coffee = db.session.query(Coffee).get(id)
     updated_coffee.name = coffee.name
     updated_coffee.roast = coffee.roast
+    updated_coffee.image_url = coffee.image_url
     updated_coffee.roaster_id = coffee.roaster_id
     db.session.commit()
     return updated_coffee
