@@ -66,6 +66,18 @@ function Home({coffees}) {
             </Card.Body>
           </Card>  
         </Col>
+        <Col>    
+          <Card style={{ width: '18rem' }}>
+            <Card.Img variant="top" src={coffees?.at(-4)?.image_url} />
+            <Card.Body>
+            <Card.Title>{coffees?.at(-4)?.name}</Card.Title>
+              <Card.Text>
+                Producer: {coffees?.at(-4)?.roaster?.name}
+              </Card.Text>
+              <Button variant="success">See More</Button>
+            </Card.Body>
+          </Card>  
+        </Col>
       </Row>
     </Container>
   )

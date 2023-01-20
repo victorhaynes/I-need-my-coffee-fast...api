@@ -4,7 +4,8 @@
 import uvicorn
 from fastapi import FastAPI, status, HTTPException, Depends
 from fastapi_jwt_auth import AuthJWT
-
+import json
+from fastapi.encoders import jsonable_encoder
 from dotenv import load_dotenv
 import os
 
@@ -50,8 +51,8 @@ def jwt_check(Authorize: AuthJWT=Depends()):
     except Exception:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=[{"msg": "Invalid authorization token."}])
 
-    authenticated_user_details = Authorize.get_jwt_subject().split(",")
-    return {"username": authenticated_user_details[0], "id": int(authenticated_user_details[1])}
+    authenticated_user_details = Authorize.get_jwt_subject()
+    return json.loads(authenticated_user_details)
 
 def is_admin(authenticated_user_object: dict) -> bool:
     try:
@@ -297,13 +298,13 @@ def delete_all_records(Authorize: AuthJWT=Depends()):
 # ~~~ Login ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # ~~~ Login ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 @app.post("/login")
-def login(user: LoginDetails, response_model= AuthenticatedUserResponse,Authorize: AuthJWT=Depends(), status_code=status.HTTP_201_CREATED):
+def login(user: LoginDetails,Authorize: AuthJWT=Depends(), status_code=status.HTTP_201_CREATED):
     user = db.session.query(User).filter_by(username=user.username).filter_by(password=user.password).first()
     if user:
-        access_token = Authorize.create_access_token(subject=f"{user.username},{user.id}")
-        return {"id": user.id, "username":user.username, "time_created": user.time_created, "access_token": access_token}
+        access_token = Authorize.create_access_token(subject=json.dumps(jsonable_encoder(user)))
+        return {**user.__dict__, "access_token": access_token}
     else:
-        raise HTTPException(status_code=422,detail=[{"msg": "Invalid username or password."}])
+        raise HTTPException(status_code=400,detail=[{"msg": "Invalid username or password."}])
 
 
 @app.get("/who-am-i")

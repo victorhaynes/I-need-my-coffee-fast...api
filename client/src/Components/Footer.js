@@ -8,6 +8,10 @@ function Footer() {
             <p class="text-center text-white">
                 Copyright &copy; I Need My Coffee Fast...API - 2023
             </p>
+            <p class="text-center text-white">
+                <a style={{color: "white"}} href='https://github.com/victorhaynes/I-need-my-coffee-fast...api'>A project by Victor Haynes </a>
+            </p>
+            
         </Container>
     </footer>
     )
