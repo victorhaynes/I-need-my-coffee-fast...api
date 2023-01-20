@@ -10,19 +10,30 @@ import Account from './Components/Account';
 import Login from './Components/Login';
 import About from './Components/About';
 import NotFound404 from './Components/Notfound404';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
+  
+  const [coffees, setCoffees] = useState([])
+  const [errors, setErrors] = useState({})
+
+
+  useEffect(()=>{
+  axios.get('/coffees').then(res => setCoffees(res.data)).catch(err => setErrors(err));
+  },[])
 
   function prettyDate(time){
     const milliseconds = Date.parse(time)
     const dateified = new Date(milliseconds).toString().split(" GMT")[0]
     return dateified
 }
+
+
   return (
     <BrowserRouter>
       <NavBar/>
       <Routes>
-        <Route exact path ="/" element={<Home/>}/>
+        <Route exact path ="/" element={<Home coffees={coffees} prettyDate={prettyDate}/>}/>
         <Route exact path ="/coffees" element={<Coffees prettyDate={prettyDate}/>}/>
         <Route exact path ="/roasters" element={<Roasters prettyDate={prettyDate}/>}/>
         <Route exact path ="/login" element={<Login/>}/>
