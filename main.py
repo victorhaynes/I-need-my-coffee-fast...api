@@ -20,6 +20,7 @@ from schemas import UserResponse as UserResponseSchema
 from schemas import CoffeeResponse as CoffeeResponseSchema
 from schemas import RoasterResponse as RoasterResponseSchema
 from schemas import LoginDetails
+from schemas import AuthenticatedUserResponse
 
 from seeds import seed_coffees, seed_roasters, seed_users
 
@@ -296,11 +297,11 @@ def delete_all_records(Authorize: AuthJWT=Depends()):
 # ~~~ Login ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # ~~~ Login ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 @app.post("/login")
-def login(user: LoginDetails, Authorize: AuthJWT=Depends(), status_code=status.HTTP_201_CREATED):
+def login(user: LoginDetails, response_model= AuthenticatedUserResponse,Authorize: AuthJWT=Depends(), status_code=status.HTTP_201_CREATED):
     user = db.session.query(User).filter_by(username=user.username).filter_by(password=user.password).first()
     if user:
         access_token = Authorize.create_access_token(subject=f"{user.username},{user.id}")
-        return {"access_token": access_token}
+        return {"id": user.id, "username":user.username, "time_created": user.time_created, "access_token": access_token}
     else:
         raise HTTPException(status_code=422,detail=[{"msg": "Invalid username or password."}])
 

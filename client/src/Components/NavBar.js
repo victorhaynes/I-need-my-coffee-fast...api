@@ -1,9 +1,13 @@
 import React from 'react'
-import {Navbar, Container, Nav} from 'react-bootstrap'
+import {Navbar, Container, Nav, Button} from 'react-bootstrap'
 import { Link } from 'react-router-dom';
 
 
-function NavBar() {
+function NavBar({authenticatedUser, setAuthenticatedUser}) {
+
+    function logMeOut(){
+        setAuthenticatedUser(false)
+    }
   return (
         <Navbar bg="dark" variant="dark">
             <Container>
@@ -15,6 +19,7 @@ function NavBar() {
                     <Nav.Link as={Link} to="/login">Login</Nav.Link>
                     <Nav.Link as={Link} to="/account">Account</Nav.Link>
                     <Nav.Link as={Link} to="/about">About</Nav.Link>
+                    {authenticatedUser ? <Button variant="success" onClick={logMeOut}>Logout</Button> : null}
                 </Nav>
             </Container>
         </Navbar>

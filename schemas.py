@@ -106,3 +106,11 @@ class UserResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class AuthenticatedUserResponse(BaseModel):
+    id: int
+    username: str
+    access_token: str
+    time_created: datetime
+    time_updated: Optional[datetime]
