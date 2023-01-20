@@ -11,6 +11,7 @@ import Login from './Components/Login';
 import About from './Components/About';
 import NotFound404 from './Components/Notfound404';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Footer from './Components/Footer';
 
 function App() {
   
@@ -41,6 +42,7 @@ function App() {
         <Route exact path ="/about" element={<About/>}/>
         <Route path="*" element={<NotFound404/>}/>
       </Routes>
+      <Footer/>
     </BrowserRouter>
   )
 }

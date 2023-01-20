@@ -1,14 +1,20 @@
 # I-need-my-coffee-fast...api
-A Docker-containerized fullstack application with: a RESTFUL FASTApi API, React.js frontend, PostgreSQL database, and PGAdmin.
+A Docker-containerized fullstack application with: a RESTFUL FASTApi API, React.js and Bootstrap frontend, PostgreSQL database, and PGAdmin database administration.
+
+
+Interact with the client at port:3000 URL "/" Home Page:
+
+<img src="./images/Home_Page.jpg" alt="coffee erd" width="1000" height=auto>
+
 
 Featuring full CRUD on a one-to-many entity relationship (Roaster -< Coffee) created by Victor Haynes
 
 <img src="./images/Coffee_ERD.jpg" alt="coffee erd" width="400" height=auto>
 
-Additionally:
-- Custom validations
-- Custom Serializers & attributes
+Additional Features:
 - JWT for authentication & admin-specific actions
+- Custom Model validations
+- Custom Response Serializers & attributes
 
 To build:
 - `$ docker-compose up`
@@ -18,7 +24,7 @@ To create databse tables run these commands from the project root after building
 - `$ docker-compose run api alembic upgrade head`
 
 
-Discover this API at URL port:8000 "/docs":
+Discover this API at port:8000 URL "/docs":
 
 <img src="./images/FastAPI_docs.jpg" alt="docs page" width="1000" height=auto>
 

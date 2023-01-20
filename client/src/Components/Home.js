@@ -23,7 +23,7 @@ function Home({coffees}) {
       </Row>
       <Row>
         <Card className="text-center bg-secondary text-white my-5 py-4" >
-          <Card.Body>Shop coffees from over 100 speciality roasters across the U.S. and 25 unique, expressive origins. Each batch is roasted to order according to the roaster's schedule and subsequently shipped within 48 hours.</Card.Body>
+          <Card.Body>Shop coffees from over 100 speciality roasters across North America and 25 unique, expressive origins. Each batch is roasted to order according to the roaster's schedule and subsequently shipped within 48 hours.</Card.Body>
         </Card>
       </Row>
       <Row className='text-center my-5'>
@@ -38,7 +38,7 @@ function Home({coffees}) {
               <Card.Text>
                 Producer: {coffees?.at(-1)?.roaster?.name}
               </Card.Text>
-              <Button variant="primary">See More</Button>
+              <Button variant="success">See More</Button>
             </Card.Body>
           </Card>  
         </Col>
@@ -50,7 +50,7 @@ function Home({coffees}) {
               <Card.Text>
                 Producer: {coffees?.at(-2)?.roaster?.name}
               </Card.Text>
-              <Button variant="primary">See More</Button>
+              <Button variant="success">See More</Button>
             </Card.Body>
           </Card>  
         </Col>
@@ -62,7 +62,7 @@ function Home({coffees}) {
               <Card.Text>
                 Producer: {coffees?.at(-3)?.roaster?.name}
               </Card.Text>
-              <Button variant="primary">See More</Button>
+              <Button variant="success">See More</Button>
             </Card.Body>
           </Card>  
         </Col>
