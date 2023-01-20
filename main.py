@@ -51,12 +51,12 @@ def jwt_check(Authorize: AuthJWT=Depends()):
     except Exception:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=[{"msg": "Invalid authorization token."}])
 
-    authenticated_user_details = Authorize.get_jwt_subject()
-    return json.loads(authenticated_user_details)
+    current_user = Authorize.get_jwt_subject()
+    return json.loads(current_user)
 
-def is_admin(authenticated_user_object: dict) -> bool:
+def is_admin(current_user: dict) -> bool:
     try:
-        if authenticated_user_object["username"] == "admin":
+        if current_user["username"] == "admin":
             return True
         else:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=[{"msg": "Not an admin."}])
@@ -302,9 +302,10 @@ def login(user: LoginDetails,Authorize: AuthJWT=Depends(), status_code=status.HT
     user = db.session.query(User).filter_by(username=user.username).filter_by(password=user.password).first()
     if user:
         access_token = Authorize.create_access_token(subject=json.dumps(jsonable_encoder(user)))
-        return {**user.__dict__, "access_token": access_token}
+        refresh_token = Authorize.create_refresh_token(subject=json.dumps(jsonable_encoder(user)))
+        return {**user.__dict__, "access_token": access_token, "refresh_token": refresh_token}
     else:
-        raise HTTPException(status_code=400,detail=[{"msg": "Invalid username or password."}])
+        raise HTTPException(status_code=401,detail=[{"msg": "Invalid username or password."}])
 
 
 @app.get("/who-am-i")
@@ -313,30 +314,44 @@ def who_am_i(Authorize: AuthJWT=Depends()):
 
 
 
+@app.get("/new-token")
+def create_new_token(Authorize: AuthJWT=Depends()):
+    try:
+        Authorize.jwt_refresh_token_required()
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=[{"msg": "Invalid refresh token."}])
 
-# Refactored code for refreshing tokens, currently not implemented in client/frontend
-# @app.post("/login")
-# def login(user: LoginDetails, Authorize: AuthJWT=Depends(), status_code=status.HTTP_201_CREATED):
-#     user = db.session.query(User).filter_by(username=user.username).filter_by(password=user.password).first()
-#     if user:
-#         access_token = Authorize.create_access_token(subject=f"{user.username},{user.id}")
-#         refresh_token = Authorize.create_refresh_token(subject=f"{user.username},{user.id}")
-#         return {"access_token": access_token, "refresh_token": refresh_token}
-#     else:
-#         raise HTTPException(status_code=422,detail=[{"msg": "Invalid username or password."}])
-#
-# 
-# @app.get('/new-token')
-# def create_new_token(Authorize: AuthJWT=Depends()):
-#     try:
-#         Authorize.jwt_refresh_token_required()
-#     except Exception:
-#         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=[{"msg": "Invalid authorization token."}])
+    current_user = Authorize.get_jwt_subject()
 
-#     current_user = Authorize.get_jwt_subject()
-#     access_token=Authorize.create_access_token(subject=current_user)
+    access_token = Authorize.create_access_token(subject=current_user)
 
-#     return {"new_access_token": access_token}
+    return {**json.loads(current_user), "new_access_token": access_token}
+
+
+@app.post("/fresh-login")
+def create_freshness_token(user: LoginDetails, Authorize: AuthJWT=Depends()):
+    jwt_check(Authorize)
+    user = db.session.query(User).filter_by(username=user.username).filter_by(password=user.password).first()
+    if user:
+        freshness_token = Authorize.create_access_token(subject=json.dumps(jsonable_encoder(user)), fresh=True)
+        return {**user.__dict__, "freshness_token": freshness_token}
+    else:
+        raise HTTPException(status_code=401,detail=[{"msg": "Invalid username or password."}])
+
+
+# ~~~~~~~~~~~~ fresh test ~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~ fresh test ~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~ fresh test ~~~~~~~~~~~~~~~~~~~~~~
+@app.get("/fresh-route")
+def test_fresh(Authorize: AuthJWT=Depends()):
+    jwt_check(Authorize)
+    try:
+        Authorize.fresh_jwt_required()
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=[{"msg": "Invalid freshness token."}])
+
+    current_user = Authorize.get_jwt_subject()
+    return json.loads(current_user)
 
 
 # ~~~ Database Management ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
