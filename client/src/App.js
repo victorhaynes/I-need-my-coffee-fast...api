@@ -19,19 +19,17 @@ function App() {
   
   const [coffees, setCoffees] = useState([])
   const [errors, setErrors] = useState({})
-  const [authenticatedUser, setAuthenticatedUser] = useState(false)
+  const [currentUser, setCurrentUser] = useState(false)
 
-  // fetch array of coffee objects
+  // Get current user (hit API with JWT stored in cookies), respond with a User object/dict for current user
+  useEffect(()=>{
+    axios.get('/me').then(res => setCurrentUser(res.data)).catch(err => setErrors(err.message));
+  },[])
+
+  // Fetch array of coffee objects
   useEffect(()=>{
     axios.get('/coffees').then(res => setCoffees(res.data)).catch(err => setErrors(err.message));
   },[])
-
-  // instantiate axios instance that will include auth headers
-  const authAxios = axios.create({
-    headers: {
-      Authorization: `Bearer ${authenticatedUser?.access_token}`
-    }
-  })
 
 
   function prettyDate(time){
@@ -43,13 +41,13 @@ function App() {
 
   return (
     <BrowserRouter>
-      <NavBar authenticatedUser={authenticatedUser} setAuthenticatedUser={setAuthenticatedUser}/>
+      <NavBar currentUser={currentUser} setCurrentUser={setCurrentUser}/>
       <Routes>
         <Route exact path ="/" element={<Home coffees={coffees} prettyDate={prettyDate}/>}/>
         <Route exact path ="/coffees" element={<Coffees prettyDate={prettyDate}/>}/>
         <Route exact path ="/roasters" element={<Roasters prettyDate={prettyDate}/>}/>
-        <Route exact path ="/login" element={<Login setAuthenticatedUser={setAuthenticatedUser}/>}/>
-        <Route element={<PrivateRoutes authenticatedUser={authenticatedUser}/>}>
+        <Route exact path ="/login" element={<Login setCurrentUser={setCurrentUser}/>}/>
+        <Route element={<PrivateRoutes currentUser={currentUser}/>}>
           <Route exact path ="/account" element={<Account/>}/>
         </Route>
         <Route exact path ="/about" element={<About/>}/>

@@ -40,12 +40,17 @@ app.add_middleware(DBSessionMiddleware, db_url=os.environ["DATABASE_URL"])
 ### JWT Config
 class Settings(BaseModel):
     authjwt_secret_key: str = os.environ["JWT_SECRET_KEY"]
+    authjwt_token_location: set = {"cookies"}
+    authjwt_cookie_secure: bool = False
+    authjwt_cookie_csrf_protect: bool = True
+    # authjwt_cookie_samesite: str = 'lax'
+
 
 @AuthJWT.load_config
 def get_config():
     return Settings()
 
-def jwt_check(Authorize: AuthJWT=Depends()):
+def jwt_owner(Authorize: AuthJWT=Depends()):
     try:
         Authorize.jwt_required()
     except Exception:
@@ -202,9 +207,9 @@ def create_user(user: UserSchema):
 @app.get("/users/{id}", response_model=UserResponseSchema, status_code=status.HTTP_200_OK)
 def show_user(id: int, Authorize: AuthJWT=Depends()):
     user = db.session.query(User).get(id)
-    if user and jwt_check(Authorize)["username"]=="admin":
+    if user and jwt_owner(Authorize)["username"]=="admin":
         return user
-    elif user and jwt_check(Authorize)["id"]==id:
+    elif user and jwt_owner(Authorize)["id"]==id:
         return user
     elif user:
         raise HTTPException(status_code=404,detail=[{"msg": "Not authorized to view other accounts."}])
@@ -215,7 +220,7 @@ def show_user(id: int, Authorize: AuthJWT=Depends()):
 @app.put("/users/{id}", response_model=UserResponseSchema, status_code=status.HTTP_202_ACCEPTED)
 def update_user(id: int, user: UserSchema, Authorize: AuthJWT=Depends()):
     updated_user = db.session.query(User).get(id)
-    if updated_user and jwt_check(Authorize)["id"]==id:
+    if updated_user and jwt_owner(Authorize)["id"]==id:
         updated_user.username = user.username
         updated_user.email = user.email
         updated_user.password = user.password
@@ -228,7 +233,7 @@ def update_user(id: int, user: UserSchema, Authorize: AuthJWT=Depends()):
 @app.delete("/users/{id}", status_code=status.HTTP_202_ACCEPTED)
 def delete_user(id: int, Authorize: AuthJWT=Depends()):
     user_to_delete = db.session.query(User).get(id)
-    if user_to_delete and is_admin(jwt_check(Authorize)) and not user_to_delete.username == "admin":
+    if user_to_delete and is_admin(jwt_owner(Authorize)) and not user_to_delete.username == "admin":
         db.session.delete(user_to_delete)
         db.session.commit()
         return {"message": f"User ID# {id} successfully deleted"}
@@ -254,7 +259,7 @@ def initialize():
 
 @app.get("/seed-all", status_code=status.HTTP_201_CREATED)
 def seed_database(Authorize: AuthJWT=Depends()):
-    if is_admin(jwt_check(Authorize)):
+    if is_admin(jwt_owner(Authorize)):
         seed_roasters()
         seed_coffees()
         seed_users()
@@ -263,28 +268,28 @@ def seed_database(Authorize: AuthJWT=Depends()):
 
 @app.get("/seed-roasters", status_code=status.HTTP_201_CREATED)
 def populate_roasters(Authorize: AuthJWT=Depends()):
-    if is_admin(jwt_check(Authorize)):
+    if is_admin(jwt_owner(Authorize)):
         seed_roasters()
         return {"message": "Seeded database with Roasters successfully."}
 
 
 @app.get("/seed-coffees", status_code=status.HTTP_201_CREATED)
 def populate_coffees(Authorize: AuthJWT=Depends()):
-    if is_admin(jwt_check(Authorize)):
+    if is_admin(jwt_owner(Authorize)):
         seed_coffees()
         return {"message": "Seeded database with Coffees successfully."}
 
 
 @app.get("/seed-users", status_code=status.HTTP_201_CREATED)
 def populate_users(Authorize: AuthJWT=Depends()):
-    if is_admin(jwt_check(Authorize)):
+    if is_admin(jwt_owner(Authorize)):
         seed_users()
         return {"message": "Seeded database with Users successfully."}
 
 
 @app.get("/delete-all", status_code=status.HTTP_202_ACCEPTED)
 def delete_all_records(Authorize: AuthJWT=Depends()):
-    if is_admin(jwt_check(Authorize)):
+    if is_admin(jwt_owner(Authorize)):
         db.session.query(Coffee).delete()
         db.session.commit()
         db.session.query(Roaster).delete()
@@ -303,38 +308,58 @@ def login(user: LoginDetails,Authorize: AuthJWT=Depends(), status_code=status.HT
     if user:
         access_token = Authorize.create_access_token(subject=json.dumps(jsonable_encoder(user)))
         refresh_token = Authorize.create_refresh_token(subject=json.dumps(jsonable_encoder(user)))
-        return {**user.__dict__, "access_token": access_token, "refresh_token": refresh_token}
+
+        Authorize.set_access_cookies(access_token)
+        Authorize.set_refresh_cookies(refresh_token)
+        return user
     else:
         raise HTTPException(status_code=401,detail=[{"msg": "Invalid username or password."}])
 
 
-@app.get("/who-am-i")
+@app.get("/me")
 def who_am_i(Authorize: AuthJWT=Depends()):
-    return jwt_check(Authorize)
+    return jwt_owner(Authorize)
 
 
 
-@app.get("/new-token")
-def create_new_token(Authorize: AuthJWT=Depends()):
-    try:
-        Authorize.jwt_refresh_token_required()
-    except Exception:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=[{"msg": "Invalid refresh token."}])
+# @app.post("/refresh")
+# def create_new_token(Authorize: AuthJWT=Depends()):
+#     # try:
+#     #     Authorize.jwt_refresh_token_required()
+#     # except Exception:
+#     #     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=[{"msg": "Invalid refresh token."}])
+#     Authorize.jwt_refresh_token_required()
+
+#     current_user = Authorize.get_jwt_subject()
+#     new_access_token = Authorize.create_access_token(subject=current_user)
+#     Authorize.set_access_cookies(new_access_token)
+
+#     return {"msg": "Token successfully refreshed."}
+
+
+@app.get('/refreshed')
+def refresh(Authorize: AuthJWT = Depends()):
+    Authorize.jwt_refresh_token_required()
 
     current_user = Authorize.get_jwt_subject()
+    new_access_token = Authorize.create_access_token(subject=current_user)
+    # Set the JWT and CSRF double submit cookies in the response
+    Authorize.set_access_cookies(new_access_token)
+    return {"msg":"The token has been refresh"}
 
-    access_token = Authorize.create_access_token(subject=current_user)
+@app.delete("/logout")
+def logout(Authorize: AuthJWT=Depends()):
+    Authorize.unset_jwt_cookies()
+    return {"msg": "Successfully logged out."}
 
-    return {**json.loads(current_user), "new_access_token": access_token}
 
-
-@app.post("/fresh-login")
+@app.get("/fresh-login")
 def create_freshness_token(user: LoginDetails, Authorize: AuthJWT=Depends()):
-    jwt_check(Authorize)
+    jwt_owner(Authorize)
     user = db.session.query(User).filter_by(username=user.username).filter_by(password=user.password).first()
     if user:
         freshness_token = Authorize.create_access_token(subject=json.dumps(jsonable_encoder(user)), fresh=True)
-        return {**user.__dict__, "freshness_token": freshness_token}
+        return {"msg": "Successfully issued freshness token."}
     else:
         raise HTTPException(status_code=401,detail=[{"msg": "Invalid username or password."}])
 
@@ -344,7 +369,7 @@ def create_freshness_token(user: LoginDetails, Authorize: AuthJWT=Depends()):
 # ~~~~~~~~~~~~ fresh test ~~~~~~~~~~~~~~~~~~~~~~
 @app.get("/fresh-route")
 def test_fresh(Authorize: AuthJWT=Depends()):
-    jwt_check(Authorize)
+    jwt_owner(Authorize)
     try:
         Authorize.fresh_jwt_required()
     except Exception:
