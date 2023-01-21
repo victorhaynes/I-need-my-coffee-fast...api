@@ -17,31 +17,20 @@ import NiceTry401 from './Components/NiceTry401';
 
 function App() {
   
-  const [currentUser, setCurrentUser] = useState(false)
-  const [authError, setAuthError] = useState(false)
   // Get current user (hit API & check if JWT stored in cookies/valid), respond with a User object/dict for current user
+  const [currentUser, setCurrentUser] = useState(false)
   useEffect(()=>{
-    axios.get('/me').then(res => {
-      setCurrentUser(res.data)
-      setAuthError(false)
-    }).catch(err => {
-      // setAuthError(err.message)
-      setCurrentUser(false)
-    });
+    axios.get('/me').then(res => setCurrentUser(res.data)).catch(err => setCurrentUser(false));
   },[])
 
-  const [coffees, setCoffees] = useState([])
-  const [errors, setErrors] = useState({})
   // Fetch array of coffee objects
+  const [coffees, setCoffees] = useState([])
+  const [coffeesErrors, setCoffeesErrors] = useState(false)
   useEffect(()=>{
-    axios.get('/coffees').then(res => setCoffees(res.data)).catch(err => setErrors(err.message));
+    axios.get('/coffees').then(res => setCoffees(res.data)).catch(err => setCoffeesErrors(err.response.data.detail));
   },[])
 
-  console.log(`current user ${currentUser.username}`)
-  console.log(`coffees ${coffees[0]?.name}`)
-
-
-
+  // Date formatting function
   function prettyDate(time){
     const milliseconds = Date.parse(time)
     const dateified = new Date(milliseconds).toString().split(" GMT")[0]
@@ -53,10 +42,10 @@ function App() {
     <BrowserRouter>
       <NavBar currentUser={currentUser} setCurrentUser={setCurrentUser}/>
       <Routes>
-        <Route exact path ="/" element={<Home coffees={coffees} prettyDate={prettyDate}/>}/>
+        <Route exact path ="/" element={<Home coffees={coffees} coffeesErrors={coffeesErrors} prettyDate={prettyDate}/>}/>
         <Route exact path ="/coffees" element={<Coffees prettyDate={prettyDate}/>}/>
         <Route exact path ="/roasters" element={<Roasters prettyDate={prettyDate}/>}/>
-        <Route exact path ="/login" element={<Login setCurrentUser={setCurrentUser} setAuthError={setAuthError}/>}/>
+        <Route exact path ="/login" element={<Login setCurrentUser={setCurrentUser}/>}/>
         <Route element={<PrivateRoutes currentUser={currentUser}/>}>
           <Route exact path ="/account" element={<Account/>}/>
         </Route>

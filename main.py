@@ -81,9 +81,6 @@ def is_admin(current_user: dict) -> bool:
 async def root():
     return {"message": "You are live--on a FastAPI application created by Victor Haynes. Navigate to /docs in browser to discover API."}
 
-@app.get("/test")
-def testing():
-    raise HTTPException(status_code=409, detail="bad request")
 
 ### Coffee Routes
 ### Coffee Routes
