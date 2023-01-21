@@ -3,10 +3,10 @@ import {Navbar, Container, Nav, Button} from 'react-bootstrap'
 import { Link } from 'react-router-dom';
 
 
-function NavBar({authenticatedUser, setAuthenticatedUser}) {
+function NavBar({currentUser, setCurrentUser}) {
 
     function logMeOut(){
-        setAuthenticatedUser(false)
+        setCurrentUser(false)
     }
   return (
         <Navbar bg="dark" variant="dark">
@@ -16,10 +16,9 @@ function NavBar({authenticatedUser, setAuthenticatedUser}) {
                     <Nav.Link as={Link} to="/">Home</Nav.Link>
                     <Nav.Link as={Link} to="/coffees">Coffees</Nav.Link>
                     <Nav.Link as={Link} to="/roasters">Roasters</Nav.Link>
-                    <Nav.Link as={Link} to="/login">Login</Nav.Link>
+                    {currentUser ? <Button variant="success" onClick={logMeOut}>Logout</Button> : <Nav.Link as={Link} to="/login">Login</Nav.Link>}                  
                     <Nav.Link as={Link} to="/account">Account</Nav.Link>
                     <Nav.Link as={Link} to="/about">About</Nav.Link>
-                    {authenticatedUser ? <Button variant="success" onClick={logMeOut}>Logout</Button> : null}
                 </Nav>
             </Container>
         </Navbar>
