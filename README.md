@@ -12,7 +12,7 @@ Featuring full CRUD on a one-to-many entity relationship (Roaster -< Coffee) cre
 <img src="./images/Coffee_ERD.jpg" alt="coffee erd" width="400" height=auto>
 
 Additional Features:
-- JWT for authentication & admin-specific actions
+- JWT for authentication & admin-specific actions (XSS and CSRF attack protected)
 - Custom Model validations
 - Custom Response Serializers & attributes
 
