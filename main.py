@@ -311,7 +311,7 @@ def login(user: LoginDetails,Authorize: AuthJWT=Depends(), status_code=status.HT
 
         Authorize.set_access_cookies(access_token)
         Authorize.set_refresh_cookies(refresh_token)
-        return {user}
+        return user
     else:
         raise HTTPException(status_code=401,detail=[{"msg": "Invalid username or password."}])
 
