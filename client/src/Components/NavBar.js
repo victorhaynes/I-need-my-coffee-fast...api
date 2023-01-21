@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React from 'react'
 import {Navbar, Container, Nav, Button} from 'react-bootstrap'
 import { Link } from 'react-router-dom';
@@ -6,8 +7,9 @@ import { Link } from 'react-router-dom';
 function NavBar({currentUser, setCurrentUser}) {
 
     function logMeOut(){
-        setCurrentUser(false)
+        axios.delete("/logout").then(res => setCurrentUser(false))
     }
+
   return (
         <Navbar bg="dark" variant="dark">
             <Container>

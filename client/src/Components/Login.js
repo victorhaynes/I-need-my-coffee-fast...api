@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { Form, Button, Container, Row, Col, } from 'react-bootstrap'
 
-function Login({setCurrentUser}) {
+function Login({setCurrentUser, setAuthError}) {
 
-  const [errors, setErrors] = useState([])
+  // const [errors, setErrors] = useState([])
   const [formData, setFormData] = useState({
     username:'',
     password:''
@@ -17,7 +17,13 @@ function Login({setCurrentUser}) {
 
   function handleSubmitLogin(event){
     event.preventDefault()
-    axios.post("/login", formData).then(res => setCurrentUser(res.data)).catch(err => setErrors(err.message))
+    axios.post("/login", formData).then(res => {
+      setCurrentUser(res.data)
+      setAuthError(false)
+    }).catch(err => {
+      setAuthError(err.message)
+      setCurrentUser(false)
+    })
   }
 
   return (
