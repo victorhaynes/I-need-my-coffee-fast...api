@@ -30,8 +30,6 @@ function Login({setCurrentUser}) {
     })
   }
 
-  const [show, setShow] = useState(true);
-
   return (
     <>
       <Container style={{width: '50%'}}>

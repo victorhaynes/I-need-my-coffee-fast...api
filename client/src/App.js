@@ -14,6 +14,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Footer from './Components/Footer';
 import PrivateRoutes from './utilities/PrivateRoutes';
 import NiceTry401 from './Components/NiceTry401';
+import CoffeesShow from './Components/CoffeesShow';
 
 function App() {
   
@@ -44,10 +45,11 @@ function App() {
       <Routes>
         <Route exact path ="/" element={<Home coffees={coffees} coffeesErrors={coffeesErrors} prettyDate={prettyDate}/>}/>
         <Route exact path ="/coffees" element={<Coffees prettyDate={prettyDate}/>}/>
+        <Route exact path ="/coffees/:id" element={<CoffeesShow prettyDate={prettyDate}/>}/>
         <Route exact path ="/roasters" element={<Roasters prettyDate={prettyDate}/>}/>
         <Route exact path ="/login" element={<Login setCurrentUser={setCurrentUser}/>}/>
         <Route element={<PrivateRoutes currentUser={currentUser}/>}>
-          <Route exact path ="/account" element={<Account/>}/>
+          <Route exact path ="/account" element={<Account currentUser={currentUser} prettyDate={prettyDate}/>}/>
         </Route>
         <Route exact path ="/about" element={<About/>}/>
         <Route exact path ="/nice-try" element={<NiceTry401/>}/>
