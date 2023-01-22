@@ -8,7 +8,6 @@ import Home from './Components/Home';
 import Roasters from './Components/Roasters';
 import Account from './Components/Account';
 import Login from './Components/Login';
-import About from './Components/About';
 import NotFound404 from './Components/Notfound404';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Footer from './Components/Footer';
@@ -51,7 +50,6 @@ function App() {
         <Route element={<PrivateRoutes currentUser={currentUser}/>}>
           <Route exact path ="/account" element={<Account currentUser={currentUser} prettyDate={prettyDate}/>}/>
         </Route>
-        <Route exact path ="/about" element={<About/>}/>
         <Route exact path ="/nice-try" element={<NiceTry401/>}/>
         <Route path="*" element={<NotFound404/>}/>
       </Routes>

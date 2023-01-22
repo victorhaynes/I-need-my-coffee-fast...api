@@ -2,6 +2,7 @@ import React from 'react'
 import axios from "axios";
 import { useState, useEffect } from 'react';
 import { Card, Button, Container, Row, Col } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 
 
 function Coffees({prettyDate}) {
@@ -9,11 +10,17 @@ function Coffees({prettyDate}) {
     const [coffees, setCoffees] = useState([])
     const [errors, setErrors] = useState({})
 
+    const navigate = useNavigate()
+
 
     useEffect(()=>{
-    axios.get('/coffees').then(res => setCoffees(res.data)).catch(err => setErrors(err));
+        axios.get('/coffees').then(res => setCoffees(res.data)).catch(err => setErrors(err));
     },[])
 
+    function handleClick(id){
+        navigate(`/coffees/${id}`)
+
+    }
 
     return (
         <Container fluid style={{width: "70%"}}>
@@ -34,7 +41,7 @@ function Coffees({prettyDate}) {
                 <Card.Footer>
                     <small className="text-muted">Listed {prettyDate(coffee.time_created)}</small>
                 </Card.Footer>
-                <Button className="my-30" variant="primary">See More</Button>
+                <Button className="my-30" variant="success" onClick={ () => handleClick(coffee.id)}>See More</Button>
                 </Card>
             </Col>
             ))}

@@ -6,17 +6,14 @@ function Account({currentUser, prettyDate}) {
 
 
   return (
-    <Container style={{width: "50%", backgroundColor: "silver", borderRadius: "10px"}} className='my-5'>
+    <Container style={{width: "50%", backgroundColor: "f5f5f5", borderRadius: "10px", minWidth: "500px"}} className='my-5'>
       <Row>
         <Col>
-        {/* <Row> */}
           <Image src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460__340.png" 
                 roundedCircle 
                 alt="avatar" 
-                // style={{width: "80%", height: "auto"}}
                 fluid
                 className='my-3 mx-auto'></Image>
-                {/* </Row> */}
         </Col>
         <Col>
         <h3 style={{marginTop: "5px"}}>Account Details</h3>
