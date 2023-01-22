@@ -5,7 +5,7 @@ function Home({coffees, coffesErrors}) {
   return (
     <>
       <Container>
-        <Row className='px-4 my-5'>
+        <Row className='px-4 my-5' >
             <Col sm={7}>
               <Image 
                 src="https://www.tastingtable.com/img/gallery/what-is-terroir-and-does-it-matter-for-coffee-beans/l-intro-1645978396.jpg" 

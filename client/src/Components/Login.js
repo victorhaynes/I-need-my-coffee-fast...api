@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { Form, Button, Container, Row, Col, Alert, } from 'react-bootstrap'
+import { useNavigate } from 'react-router-dom'
+
 
 function Login({setCurrentUser}) {
 
+  const navigate=useNavigate()
   const [authError, setAuthError] = useState(false)
   const [formData, setFormData] = useState({
     username:'',
     password:''
   })
-
- 
 
 
   function handleChangeCaptureForm(event){
@@ -22,11 +23,14 @@ function Login({setCurrentUser}) {
     axios.post("/login", formData).then(res => {
       setCurrentUser(res.data)
       setAuthError(false)
+      navigate("/account")
     }).catch(err => {
       setAuthError(err.response.data.detail.map((e) => e.msg))
       setCurrentUser(false)
     })
   }
+
+  const [show, setShow] = useState(true);
 
   return (
     <>

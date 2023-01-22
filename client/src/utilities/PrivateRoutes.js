@@ -1,9 +1,9 @@
 import React from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
 
-function PrivateRoutes({authenticatedUser}) {
+function PrivateRoutes({currentUser}) {
     return (
-        authenticatedUser?.access_token ? <Outlet/> : <Navigate to="/login"/>
+        currentUser ? <Outlet/> : <Navigate to="/login"/>
     )
 }
 
