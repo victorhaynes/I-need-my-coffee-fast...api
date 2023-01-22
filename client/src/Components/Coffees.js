@@ -1,7 +1,7 @@
 import React from 'react'
 import axios from "axios";
 import { useState, useEffect } from 'react';
-import { Card, Button, CardGroup, Row, Col } from 'react-bootstrap';
+import { Card, Button, Container, Row, Col } from 'react-bootstrap';
 
 
 function Coffees({prettyDate}) {
@@ -16,10 +16,16 @@ function Coffees({prettyDate}) {
 
 
     return (
-        <Row xs={1} md={2} className="g-4">
-            {coffees?.map((coffee) => (
-            <Col key={coffee.id}>
-                <Card style={{ width: '18rem' }}>
+        <Container fluid style={{width: "70%"}}>
+            <Row>
+                <div className='title-holder text-center my-4'>
+                    <h2>Shop Speciality Coffees</h2>
+                </div>
+            </Row>
+            <Row>
+                {coffees?.map((coffee) => (
+            <Col key={coffee.id} style={{marginBottom: "50px"}}>
+                <Card style={{ width: '18rem' }} className="mx-auto">
                 <Card.Img variant="top" src={coffee.image_url} />
                 <Card.Body>
                     <Card.Title>{coffee.name}</Card.Title>
@@ -32,7 +38,9 @@ function Coffees({prettyDate}) {
                 </Card>
             </Col>
             ))}
-        </Row>
+            </Row>
+        </Container>
+
   )
 }
 

@@ -3,9 +3,9 @@ import { Col, Container, Row, Image, Button, Card, Alert } from 'react-bootstrap
 
 function Home({coffees, coffesErrors}) {
   return (
-
-    <Container>
-      <Row className='px-4 my-5'>
+    <>
+      <Container>
+        <Row className='px-4 my-5'>
             <Col sm={7}>
               <Image 
                 src="https://www.tastingtable.com/img/gallery/what-is-terroir-and-does-it-matter-for-coffee-beans/l-intro-1645978396.jpg" 
@@ -30,45 +30,48 @@ function Home({coffees, coffesErrors}) {
         <Row className='text-center my-5'>
           <h1>Our Latest Offerings:</h1>
         </Row>
-        <Row>
-          <Col>    
-            <Card style={{ width: '18rem' }}>
-              <Card.Img variant="top" src={coffees?.at(-1)?.image_url} />
-              <Card.Body>
-                <Card.Title>{coffees?.at(-1)?.name}</Card.Title>
-                <Card.Text>
-                  Producer: {coffees?.at(-1)?.roaster?.name}
-                </Card.Text>
-                <Button variant="success">See More</Button>
-              </Card.Body>
-            </Card>  
-          </Col>
-          <Col>    
-            <Card style={{ width: '18rem' }}>
-              <Card.Img variant="top" src={coffees?.at(-2)?.image_url} />
-              <Card.Body>
-              <Card.Title>{coffees?.at(-2)?.name}</Card.Title>
-                <Card.Text>
-                  Producer: {coffees?.at(-2)?.roaster?.name}
-                </Card.Text>
-                <Button variant="success">See More</Button>
-              </Card.Body>
-            </Card>  
-          </Col>
-          <Col>    
-            <Card style={{ width: '18rem' }}>
-              <Card.Img variant="top" src={coffees?.at(-3)?.image_url} />
-              <Card.Body>
-              <Card.Title>{coffees?.at(-3)?.name}</Card.Title>
-                <Card.Text>
-                  Producer: {coffees?.at(-3)?.roaster?.name}
-                </Card.Text>
-                <Button variant="success">See More</Button>
-              </Card.Body>
-            </Card>  
-          </Col>
-        </Row> 
-    </Container>
+      </Container>
+      <Container fluid style={{width: "70%"}}>
+          <Row>
+            <Col>    
+              <Card style={{ width: '18rem' }} className="mx-auto">
+                <Card.Img variant="top" src={coffees?.at(-1)?.image_url} />
+                <Card.Body>
+                  <Card.Title>{coffees?.at(-1)?.name}</Card.Title>
+                  <Card.Text>
+                    Producer: {coffees?.at(-1)?.roaster?.name}
+                  </Card.Text>
+                  <Button variant="success">See More</Button>
+                </Card.Body>
+              </Card>  
+            </Col>
+            <Col>    
+              <Card style={{ width: '18rem' }} className="mx-auto">
+                <Card.Img variant="top" src={coffees?.at(-2)?.image_url} />
+                <Card.Body>
+                <Card.Title>{coffees?.at(-2)?.name}</Card.Title>
+                  <Card.Text>
+                    Producer: {coffees?.at(-2)?.roaster?.name}
+                  </Card.Text>
+                  <Button variant="success">See More</Button>
+                </Card.Body>
+              </Card>  
+            </Col>
+            <Col>    
+              <Card style={{ width: '18rem' }} className="mx-auto">
+                <Card.Img variant="top" src={coffees?.at(-3)?.image_url} />
+                <Card.Body>
+                <Card.Title>{coffees?.at(-3)?.name}</Card.Title>
+                  <Card.Text>
+                    Producer: {coffees?.at(-3)?.roaster?.name}
+                  </Card.Text>
+                  <Button variant="success">See More</Button>
+                </Card.Body>
+              </Card>  
+            </Col>
+          </Row> 
+      </Container>
+    </>
   )
 }
 
