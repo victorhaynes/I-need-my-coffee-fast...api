@@ -2,7 +2,7 @@ import axios from 'axios'
 import React, { useState, useEffect } from 'react'
 import { Navigate, Outlet, useNavigate } from 'react-router-dom'
 
-function PrivateRoutes({currentUser}) {
+function PrivateRoutes({currentUser, setCurrentUser}) {
 
     const [loading, setLoading] = useState(true)
     const [errors, setErrors] = useState(false)
@@ -12,6 +12,8 @@ function PrivateRoutes({currentUser}) {
         axios.get("/me").then(res => {
         setLoading(false)
         setErrors(false)
+        // this state update is necessary bc it grabs the CSRF token that "/login" cannot both generate & respond with at the same time
+        setCurrentUser(res.data)
       }).catch((err) => setErrors(err.response.data.detail.map((e) => e.msg)))}
       ,[])
 
@@ -25,3 +27,4 @@ function PrivateRoutes({currentUser}) {
 }
 
 export default PrivateRoutes
+

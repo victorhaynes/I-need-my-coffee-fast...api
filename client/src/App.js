@@ -16,6 +16,7 @@ import NiceTry401 from './Components/NiceTry401';
 import CoffeesShow from './Components/CoffeesShow';
 import CoffeesEdit from './Components/CoffeesEdit';
 import Register from './Components/Register';
+import CoffeesNew from './Components/CoffeesNew';
 
 function App() {
   
@@ -46,6 +47,9 @@ function App() {
         <Route exact path ="/" element={<Home coffees={coffees} coffeesErrors={coffeesErrors} prettyDate={prettyDate}/>}/>
         <Route exact path ="/coffees" element={<Coffees prettyDate={prettyDate}/>}/>
         <Route exact path ="/coffees/:id" element={<CoffeesShow currentUser={currentUser} prettyDate={prettyDate} coffees={coffees} setCoffees={setCoffees}/>}/>
+        <Route element={<PrivateRoutes currentUser={currentUser} setCurrentUser={setCurrentUser}/>}>
+          <Route exact path ="/coffees/new" element={<CoffeesNew setCoffees={setCoffees} currentUser={currentUser}/>}/>
+        </Route>
         <Route element={<PrivateRoutes currentUser={currentUser}/>}>
           <Route exact path ="/coffees/:id/edit" element={<CoffeesEdit coffees={coffees} setCoffees={setCoffees}/>}/>
         </Route>

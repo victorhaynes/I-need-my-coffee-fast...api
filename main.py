@@ -43,7 +43,9 @@ class Settings(BaseModel):
     authjwt_token_location: set = {"cookies"}
     authjwt_cookie_secure: bool = False
     authjwt_cookie_csrf_protect: bool = True
-    # authjwt_cookie_samesite: str = 'lax'
+    # authjwt_cookie_samesite: str = 'none'
+
+    authjwt_cookie_samesite: str = 'lax'
 
 
 @AuthJWT.load_config
@@ -55,7 +57,7 @@ def jwt_owner(Authorize: AuthJWT=Depends()):
         Authorize.jwt_required()
     except Exception:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=[{"msg": "Invalid authorization token."}])
-
+    # fastapi_jwt_auth.exceptions.CSRFError
     current_user = Authorize.get_jwt_subject()
     return json.loads(current_user)
 
@@ -87,15 +89,16 @@ async def root():
 ### Coffee Routes
 @app.get("/coffees", response_model=list[CoffeeResponseSchema], status_code=status.HTTP_200_OK,)
 def index_coffees():
-    return db.session.query(Coffee).all()
+    return db.session.query(Coffee).order_by(Coffee.id.asc()).all()
 
 
 @app.post("/coffees", response_model=CoffeeResponseSchema, status_code=status.HTTP_201_CREATED)
-def create_coffee(coffee: CoffeeSchema):
-    new_coffee = Coffee(name=coffee.name, roast=coffee.roast, image_url= coffee.image_url, roaster_id=coffee.roaster_id)
-    db.session.add(new_coffee)
-    db.session.commit()
-    return new_coffee
+def create_coffee(coffee: CoffeeSchema, Authorize: AuthJWT=Depends()):
+    if jwt_owner(Authorize):
+        new_coffee = Coffee(name=coffee.name, roast=coffee.roast, image_url= coffee.image_url, roaster_id=coffee.roaster_id)
+        db.session.add(new_coffee)
+        db.session.commit()
+        return new_coffee
 
 
 @app.get("/coffees/{id}", response_model=CoffeeResponseSchema,status_code=status.HTTP_200_OK)
@@ -309,16 +312,22 @@ def login(user: LoginDetails,Authorize: AuthJWT=Depends(), status_code=status.HT
 
         Authorize.set_access_cookies(access_token)
         Authorize.set_refresh_cookies(refresh_token)
+        
         return user
+
     else:
         raise HTTPException(status_code=401,detail=[{"msg": "Invalid username or password."}])
 
 
 @app.get("/me")
 def who_am_i(Authorize: AuthJWT=Depends()):
+    return {**jwt_owner(Authorize), "csrf": Authorize.get_raw_jwt()["csrf"]}
+
+
+@app.post("/test")
+def testing(Authorize: AuthJWT=Depends()):
     return jwt_owner(Authorize)
-
-
+        # return Authorize.get_raw_jwt()["csrf"]
 
 # @app.post("/refresh")
 # def create_new_token(Authorize: AuthJWT=Depends()):

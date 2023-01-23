@@ -1,27 +1,11 @@
 import React, {useState, useEffect} from 'react'
-import { Container, Col, Form, Row, Button, Alert } from 'react-bootstrap'
-import { useParams } from 'react-router-dom'
+import { Row, Form, Col, Container, Button, Alert } from 'react-bootstrap'
 import axios from 'axios'
 
-function CoffeesEdit({coffees, setCoffees}) {
+function CoffeesNew({setCoffees, currentUser}) {
 
-    const [coffee, setCoffee] = useState(false)
-    const [coffeeError, setCoffeError] = useState(false)
-    const [roasters, setRoasters] = useState([])
-    const [roastersError, setRoastersError] = useState(false)
-    const [success, setSuccess] = useState(false)
 
-    const params = useParams()
- 
-    useEffect(() => {
-      axios.get(`/coffees/${params.id}`).then(res => setCoffee(res.data)).catch(err => setCoffeError(err.response.data.detail.map((e) => e.msg)))
-    }, [])
-
-    useEffect(() => {
-        axios.get('/roasters').then(res => setRoasters(res.data)).catch(err => setRoastersError(err.response.data.detail.map((e) => e.msg)))
-      }, [])
-
-      
+    const [error, setError] = useState(false)      
     const [formData, setFormData] = useState({
         name:"",
         roast:"",
@@ -30,33 +14,47 @@ function CoffeesEdit({coffees, setCoffees}) {
 
     })
 
-    const [submissionErrors, setSubmissionError] = useState(false)
+    const [roasters, setRoasters] = useState([])
+    const [roastersError, setRoastersError] = useState(false)
+    const [success, setSuccess] = useState(false)
+
+    useEffect(() => {
+        axios.get('/roasters').then(res => {
+            setRoasters(res.data)
+            }).catch(err => {
+                setRoastersError(err.response.data.detail.map((e) => e.msg))
+                setSuccess(false)
+            })
+        }, [])
 
     function handleChangeCaptureForm(event){
         setFormData({...formData, [event.target.name]: event.target.value})
+        
       }
 
-    function handleSubmitEditCoffee(event){
+    function handleSubmitPostCoffee(event){
         event.preventDefault()
-        axios.put(`/coffees/${params.id}`, formData).then(res => {
+        axios.post('/coffees', formData
+        , 
+        {
+            headers: {
+                'X-CSRF-TOKEN': currentUser?.csrf
+            }
+        }
+        ).then(res => {
             setFormData({
             name:'',
             roast:'',
             roaster_id: null,
             image_url: ""
             })
-            setSuccess(true)
             event.target.reset()
-            setCoffees(coffees?.map((individualCoffee) => {
-                if(parseInt(individualCoffee.id) === parseInt(res.data.id)){
-                    return res.data
-                } else {
-                    return individualCoffee
-                }
-            }))
+            setSuccess(true)
+            setCoffees((coffees) => [...coffees, res.data])
         }).catch(err => {
-            setSubmissionError(err.response.data.detail.map((e) => e.msg))
+            setError(err.response.data.detail.map((e) => e.msg))
             setSuccess(false)
+
         })
 
     }
@@ -65,11 +63,11 @@ function CoffeesEdit({coffees, setCoffees}) {
     <>
         <Container style={{width: '50%'}}>
             <Row className='text-center my-5'>
-                <h2>Edit {coffee?.roaster?.name}'s {coffee?.name}</h2>
+                <h2>Post New Coffee</h2>
             </Row>
             <Row className='px-4 my-5'>
             <Col >
-                <Form onSubmit={(e)=>handleSubmitEditCoffee(e)}>
+                <Form onSubmit={(e)=>handleSubmitPostCoffee(e)}>
                     <Form.Group className="mb-3" controlId="name">
                         <Form.Label>Name</Form.Label>
                         <Form.Control name="name" placeholder="Enter Coffee Name" onChange={handleChangeCaptureForm}/>
@@ -101,11 +99,11 @@ function CoffeesEdit({coffees, setCoffees}) {
             </Row>
         </Container> 
 
-        {success ? <Alert className="text-center" variant='info'>Edit successful.</Alert> :null}
+        {success ? <Alert className="text-center" variant='info'>Post successful.</Alert> :null}
 
-        {submissionErrors && !success ? <Alert className="text-center" variant='Warning'>{submissionErrors}</Alert> : null}
+        {error && !success ? <Alert className="text-center" variant='danger'>{error}</Alert> : null}
     </> 
     )
 }
 
-export default CoffeesEdit
+export default CoffeesNew

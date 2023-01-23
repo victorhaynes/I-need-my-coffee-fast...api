@@ -1,7 +1,7 @@
 import React from 'react'
 import axios from "axios";
 import { useState, useEffect } from 'react';
-import { Card, Button, Container, Row, Col } from 'react-bootstrap';
+import { Card, Button, Container, Row, Col, Nav } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -44,6 +44,11 @@ function Coffees({prettyDate}) {
                 </Card>
             </Col>
             ))}
+            </Row>
+            <Row>
+                <Button variant='outline-success' onClick={()=>navigate("/coffees/new")}>
+                    Post New Coffee
+                </Button>
             </Row>
         </Container>
 

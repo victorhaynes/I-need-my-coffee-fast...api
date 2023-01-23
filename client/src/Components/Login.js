@@ -24,6 +24,7 @@ function Login({setCurrentUser}) {
       setCurrentUser(res.data)
       setAuthError(false)
       navigate("/account")
+      console.log(res.headers)
     }).catch(err => {
       setAuthError(err.response.data.detail.map((e) => e.msg))
       setCurrentUser(false)
