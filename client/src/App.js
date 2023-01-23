@@ -12,7 +12,6 @@ import NotFound404 from './Components/Notfound404';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Footer from './Components/Footer';
 import PrivateRoutes from './utilities/PrivateRoutes';
-import NiceTry401 from './Components/NiceTry401';
 import CoffeesShow from './Components/CoffeesShow';
 import CoffeesEdit from './Components/CoffeesEdit';
 import Register from './Components/Register';
@@ -51,7 +50,7 @@ function App() {
           <Route exact path ="/coffees/new" element={<CoffeesNew setCoffees={setCoffees} currentUser={currentUser}/>}/>
         </Route>
         <Route element={<PrivateRoutes currentUser={currentUser}/>}>
-          <Route exact path ="/coffees/:id/edit" element={<CoffeesEdit coffees={coffees} setCoffees={setCoffees}/>}/>
+          <Route exact path ="/coffees/:id/edit" element={<CoffeesEdit coffees={coffees} setCoffees={setCoffees} currentUser={currentUser}/>}/>
         </Route>
         <Route exact path ="/roasters" element={<Roasters prettyDate={prettyDate}/>}/>
         <Route exact path ="/login" element={<Login setCurrentUser={setCurrentUser}/>}/>
@@ -59,7 +58,6 @@ function App() {
           <Route exact path ="/account" element={<Account currentUser={currentUser} prettyDate={prettyDate}/>}/>
         </Route>
         <Route exact path ="/register" element={<Register/>}/>
-        <Route exact path ="/nice-try" element={<NiceTry401/>}/>
         <Route path="*" element={<NotFound404/>}/>
       </Routes>
       <Footer/>

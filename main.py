@@ -94,11 +94,11 @@ def index_coffees():
 
 @app.post("/coffees", response_model=CoffeeResponseSchema, status_code=status.HTTP_201_CREATED)
 def create_coffee(coffee: CoffeeSchema, Authorize: AuthJWT=Depends()):
-    if jwt_owner(Authorize):
-        new_coffee = Coffee(name=coffee.name, roast=coffee.roast, image_url= coffee.image_url, roaster_id=coffee.roaster_id)
-        db.session.add(new_coffee)
-        db.session.commit()
-        return new_coffee
+    jwt_owner(Authorize)
+    new_coffee = Coffee(name=coffee.name, roast=coffee.roast, image_url= coffee.image_url, roaster_id=coffee.roaster_id)
+    db.session.add(new_coffee)
+    db.session.commit()
+    return new_coffee
 
 
 @app.get("/coffees/{id}", response_model=CoffeeResponseSchema,status_code=status.HTTP_200_OK)
@@ -111,7 +111,8 @@ def show_coffee(id: int):
 
 
 @app.put("/coffees/{id}", response_model=CoffeeResponseSchema, status_code=status.HTTP_202_ACCEPTED)
-def update_coffee(id: int, coffee: CoffeeSchema):
+def update_coffee(id: int, coffee: CoffeeSchema, Authorize: AuthJWT=Depends()):
+    jwt_owner(Authorize)
     updated_coffee = db.session.query(Coffee).get(id)
     updated_coffee.name = coffee.name
     updated_coffee.roast = coffee.roast
@@ -122,11 +123,12 @@ def update_coffee(id: int, coffee: CoffeeSchema):
 
 
 @app.delete("/coffees/{id}", status_code=status.HTTP_202_ACCEPTED)
-def destroy_coffee(id: int):
-    coffee = db.session.query(Coffee).get(id)
-    db.session.delete(coffee)
-    db.session.commit()
-    return {"message": f"Coffee ID# {id} successfully deleted."}
+def destroy_coffee(id: int, Authorize: AuthJWT=Depends()):
+    if is_admin(jwt_owner(Authorize)):
+        coffee = db.session.query(Coffee).get(id)
+        db.session.delete(coffee)
+        db.session.commit()
+        return {"message": f"Coffee ID# {id} successfully deleted."}
 
 
 @app.get("/coffees/{id}/roaster", response_model=RoasterResponseSchema, status_code=status.HTTP_200_OK)
@@ -221,14 +223,24 @@ def show_user(id: int, Authorize: AuthJWT=Depends()):
 @app.put("/users/{id}", response_model=UserResponseSchema, status_code=status.HTTP_202_ACCEPTED)
 def update_user(id: int, user: UserSchema, Authorize: AuthJWT=Depends()):
     updated_user = db.session.query(User).get(id)
-    if updated_user and jwt_owner(Authorize)["id"]==id:
+    if updated_user and updated_user.username =="admin":
+        raise HTTPException(status_code=401,detail=[{"msg": "Not authorized to alter Admin account."}])
+    elif user.username =="admin":
+        raise HTTPException(status_code=401,detail=[{"msg": "Cannot give self 'admin' username."}])
+    elif updated_user and jwt_owner(Authorize)["id"]==id:
+        updated_user.username = user.username
+        updated_user.email = user.email
+        updated_user.password = user.password
+        db.session.commit()
+        return updated_user
+    elif updated_user and jwt_owner(Authorize)["username"]=="admin":
         updated_user.username = user.username
         updated_user.email = user.email
         updated_user.password = user.password
         db.session.commit()
         return updated_user
     else:
-        raise HTTPException(status_code=401,detail=[{"msg": "Not authorized to edit other accounts"}])
+        raise HTTPException(status_code=401,detail=[{"msg": "Not authorized to edit other account."}])
 
 
 @app.delete("/users/{id}", status_code=status.HTTP_202_ACCEPTED)

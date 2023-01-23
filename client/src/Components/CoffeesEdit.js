@@ -3,7 +3,7 @@ import { Container, Col, Form, Row, Button, Alert } from 'react-bootstrap'
 import { useParams } from 'react-router-dom'
 import axios from 'axios'
 
-function CoffeesEdit({coffees, setCoffees}) {
+function CoffeesEdit({coffees, setCoffees, currentUser}) {
 
     const [coffee, setCoffee] = useState(false)
     const [coffeeError, setCoffeError] = useState(false)
@@ -38,7 +38,11 @@ function CoffeesEdit({coffees, setCoffees}) {
 
     function handleSubmitEditCoffee(event){
         event.preventDefault()
-        axios.put(`/coffees/${params.id}`, formData).then(res => {
+        axios.put(`/coffees/${params.id}`, formData, {
+            headers: {
+                'X-CSRF-TOKEN': currentUser?.csrf
+            }
+        }).then(res => {
             setFormData({
             name:'',
             roast:'',

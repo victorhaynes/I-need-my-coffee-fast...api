@@ -1,12 +1,41 @@
-Auth Routes
+Routes Permissions:
 
--get users/id
--put users/id
+Get - /root - all
 
-Admin Routes
--utilitiy functions (seed-all, seed-x, delete-all)
--delete /users/id
--get /users
+COFFEES
+Get - /coffees - all
+Post - /coffees - users
+Get - / Coffees/id - all
+Put - /Coffees/id - users
+Delete - /coffees/id - admin
+Get - /coffees/id/roaster - all
+
+ROASTERS
+Get - /roasters - all
+Post - /roaster - users
+Get - / Coffees/id - all
+Put - /Coffees/id - users
+Delete - /coffees/id - admin
+Get - /coffees/id/roaster - all
+
+USERS
+Get - /users - admin
+Post - /users - all
+Get - /users/id - user
+Put - /users/id - user (yourself only, unless admin)
+Delete - /users/id - admin
+Get - /me - user
+
+
+UTILITIES
+Get - /initialize - all
+Get - /seed-all - admin
+Get - /seed-<model> - admin
+Delete - /delete-all - admin
+
+LOGIN
+Post - /login - all
+
 
 
 https://www.youtube.com/watch?v=PEfH_nIGLJk
@@ -29,4 +58,4 @@ Auth Walk through
 5 - In the /me useEffect hook update currentUser using the response from /me to include the CSRF token as an attribute
 6 - Note: The top of the app the and the PrivateRoute hook make use of the /me useEffect so everytme we hit a protected route or manually refresh 
 7 - So now, currentUser has a "csrf" attribute & JWT is still stored in HTTPOnly cookie is
-8 - Using axios/fetch include "X-CSRF-TOKEN" header when doing post methods
+8 - Using axios/fetch include "X-CSRF-TOKEN" header when doing post/put/delete methods

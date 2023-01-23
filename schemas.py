@@ -73,7 +73,7 @@ class User(BaseModel):
     @validator("email")
     def validate_email(cls, email):
         if "@" not in email:
-            raise HTTPException(status_code=422,detail=[{"msg": f"Error: {cls.__name__} name '{email}' must be at contain '@' character."}])
+            raise HTTPException(status_code=422,detail=[{"msg": f"Error: Email must be at contain '@' character."}])
         return email
 
 class LoginDetails(BaseModel):

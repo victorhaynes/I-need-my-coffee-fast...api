@@ -23,7 +23,11 @@ function CoffeesShow({currentUser, prettyDate, coffees, setCoffees}) {
   }
 
   function handleDelete(){
-    axios.delete(`/coffees/${coffee?.id}`).then(res => {
+    axios.delete(`/coffees/${coffee?.id}`,  {
+      headers: {
+        'X-CSRF-TOKEN': currentUser?.csrf
+    }
+    }).then(res => {
       setCoffees( (coffees) => coffees.filter((existingCoffee) => existingCoffee.id !== coffee?.id))
       navigate("/coffees")
       setError(false)
@@ -67,12 +71,11 @@ function CoffeesShow({currentUser, prettyDate, coffees, setCoffees}) {
           </Card.Footer>
         </>
        : <Alert className="text-center my-auto" variant='danger'>{error}</Alert>}
-       {currentUser?.username == "admin" ?
         <>
-          <Button className="my-3 mx-3" variant="warning" onClick={handleClick}>Edit</Button>
-          <Button className="my-3 mx-3" variant="danger" onClick={handleDelete}>Delete</Button>
+          {currentUser? <Button className="my-3 mx-3" variant="warning" onClick={handleClick}>Edit</Button> : null}
+          {currentUser?.username == "admin" ? <Button className="my-3 mx-3" variant="danger" onClick={handleDelete}>Delete</Button> : null }
         </>
-        : null}
+
        
     </Container>
 ) 
