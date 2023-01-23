@@ -189,8 +189,9 @@ def show_roaster_coffees(id: int):
 ### User Routes
 ### User Routes
 @app.get("/users", response_model=list[UserResponseSchema], status_code=status.HTTP_200_OK)
-def index_users():
-    return db.session.query(User).all()
+def index_users(Authorize: AuthJWT=Depends()):
+    if is_admin(jwt_owner(Authorize)):
+        return db.session.query(User).all()
 
 
 @app.post("/users", response_model=UserResponseSchema, status_code=status.HTTP_201_CREATED)

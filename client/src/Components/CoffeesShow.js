@@ -1,18 +1,35 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
-import { Container, Col, Row, Image, Alert, Card } from 'react-bootstrap'
+import { useNavigate, useParams } from 'react-router-dom'
+import { Container, Col, Row, Image, Alert, Card, Button } from 'react-bootstrap'
 
-function CoffeesShow({prettyDate}) {
+function CoffeesShow({currentUser, prettyDate, coffees, setCoffees}) {
 
   const params = useParams()
+  const navigate = useNavigate()
   const [coffee, setCoffee] = useState(false)
   const [error, setError] = useState(false)
 
 
   useEffect(() => {
-    axios.get(`/coffees/${params.id}`).then(res => setCoffee(res.data)).catch(err => setError(err.response.data.detail.map((e) => e.msg)))
+    axios.get(`/coffees/${params.id}`).then(res =>{ 
+      setCoffee(res.data)
+      setError(false)
+    }).catch(err => setError(err.response.data.detail.map((e) => e.msg)))
   }, [])
+
+  function handleClick(){
+    navigate(`/coffees/${coffee?.id}/edit`)
+  }
+
+  function handleDelete(){
+    axios.delete(`/coffees/${coffee?.id}`).then(res => {
+      setCoffees( (coffees) => coffees.filter((existingCoffee) => existingCoffee.id !== coffee?.id))
+      navigate("/coffees")
+      setError(false)
+    }).catch(err => setError(err.response.data.detail.map((e) => e.msg)))
+
+  }
 
   return (
     <Container fluid style={{width: "80%", backgroundColor: "whitesmoke", minWidth: "500px"}} className='my-5 square border rounded'>
@@ -50,6 +67,13 @@ function CoffeesShow({prettyDate}) {
           </Card.Footer>
         </>
        : <Alert className="text-center my-auto" variant='danger'>{error}</Alert>}
+       {currentUser?.username == "admin" ?
+        <>
+          <Button className="my-3 mx-3" variant="warning" onClick={handleClick}>Edit</Button>
+          <Button className="my-3 mx-3" variant="danger" onClick={handleDelete}>Delete</Button>
+        </>
+        : null}
+       
     </Container>
 ) 
 

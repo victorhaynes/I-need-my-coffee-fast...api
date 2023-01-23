@@ -19,7 +19,6 @@ function Coffees({prettyDate}) {
 
     function handleClick(id){
         navigate(`/coffees/${id}`)
-
     }
 
     return (

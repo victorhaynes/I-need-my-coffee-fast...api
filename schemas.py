@@ -53,10 +53,28 @@ class User(BaseModel):
     email: str
     password: str
 
-
     class Config:
         orm_mode = True
 
+    @validator("username")
+    def validate_username(cls, username):
+        minimum = 3
+        if len(username) < 3:
+            raise HTTPException(status_code=422,detail=[{"msg": f"Error: {cls.__name__} name '{username}' must be at least {minimum} characters."}])
+        return username
+
+    @validator("password")
+    def validate_password(cls, password):
+        minimum = 6
+        if len(password) < 3:
+            raise HTTPException(status_code=422,detail=[{"msg": f"Error: Password must be at least {minimum} characters."}])
+        return password
+
+    @validator("email")
+    def validate_email(cls, email):
+        if "@" not in email:
+            raise HTTPException(status_code=422,detail=[{"msg": f"Error: {cls.__name__} name '{email}' must be at contain '@' character."}])
+        return email
 
 class LoginDetails(BaseModel):
     username: str

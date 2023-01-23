@@ -15,6 +15,7 @@ import PrivateRoutes from './utilities/PrivateRoutes';
 import NiceTry401 from './Components/NiceTry401';
 import CoffeesShow from './Components/CoffeesShow';
 import CoffeesEdit from './Components/CoffeesEdit';
+import Register from './Components/Register';
 
 function App() {
   
@@ -36,8 +37,7 @@ function App() {
     const milliseconds = Date.parse(time)
     const dateified = new Date(milliseconds).toString().split(" GMT")[0]
     return dateified
-}
-
+  }
 
   return (
     <BrowserRouter>
@@ -45,15 +45,16 @@ function App() {
       <Routes>
         <Route exact path ="/" element={<Home coffees={coffees} coffeesErrors={coffeesErrors} prettyDate={prettyDate}/>}/>
         <Route exact path ="/coffees" element={<Coffees prettyDate={prettyDate}/>}/>
-        <Route exact path ="/coffees/:id" element={<CoffeesShow prettyDate={prettyDate}/>}/>
+        <Route exact path ="/coffees/:id" element={<CoffeesShow currentUser={currentUser} prettyDate={prettyDate} coffees={coffees} setCoffees={setCoffees}/>}/>
         <Route element={<PrivateRoutes currentUser={currentUser}/>}>
-          <Route exact path ="/coffees/:id/edit" element={<CoffeesEdit prettyDate={prettyDate}/>}/>
+          <Route exact path ="/coffees/:id/edit" element={<CoffeesEdit coffees={coffees} setCoffees={setCoffees}/>}/>
         </Route>
         <Route exact path ="/roasters" element={<Roasters prettyDate={prettyDate}/>}/>
         <Route exact path ="/login" element={<Login setCurrentUser={setCurrentUser}/>}/>
         <Route element={<PrivateRoutes currentUser={currentUser}/>}>
           <Route exact path ="/account" element={<Account currentUser={currentUser} prettyDate={prettyDate}/>}/>
         </Route>
+        <Route exact path ="/register" element={<Register/>}/>
         <Route exact path ="/nice-try" element={<NiceTry401/>}/>
         <Route path="*" element={<NotFound404/>}/>
       </Routes>

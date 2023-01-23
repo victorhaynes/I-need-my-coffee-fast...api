@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom'
 
 function Login({setCurrentUser}) {
 
-  const navigate=useNavigate()
+  const navigate = useNavigate()
   const [authError, setAuthError] = useState(false)
   const [formData, setFormData] = useState({
     username:'',
@@ -33,6 +33,9 @@ function Login({setCurrentUser}) {
   return (
     <>
       <Container style={{width: '50%'}}>
+        <Row className='text-center my-5'>
+            <h2>Login</h2>
+        </Row>
         <Row className='px-4 my-5'>
           <Col >
             <Form onSubmit={(e)=>handleSubmitLogin(e)}>
@@ -40,7 +43,6 @@ function Login({setCurrentUser}) {
                 <Form.Label>Username</Form.Label>
                 <Form.Control name = "username" type="username" placeholder="Enter Username" onChange={handleChangeCaptureForm}/>
               </Form.Group>
-
               <Form.Group className="mb-3" controlId="formBasicPassword">
                 <Form.Label>Password</Form.Label>
                 <Form.Control name= "password" type="password" placeholder="Password" onChange={handleChangeCaptureForm}/>
