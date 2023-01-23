@@ -14,6 +14,7 @@ import Footer from './Components/Footer';
 import PrivateRoutes from './utilities/PrivateRoutes';
 import NiceTry401 from './Components/NiceTry401';
 import CoffeesShow from './Components/CoffeesShow';
+import CoffeesEdit from './Components/CoffeesEdit';
 
 function App() {
   
@@ -45,6 +46,9 @@ function App() {
         <Route exact path ="/" element={<Home coffees={coffees} coffeesErrors={coffeesErrors} prettyDate={prettyDate}/>}/>
         <Route exact path ="/coffees" element={<Coffees prettyDate={prettyDate}/>}/>
         <Route exact path ="/coffees/:id" element={<CoffeesShow prettyDate={prettyDate}/>}/>
+        <Route element={<PrivateRoutes currentUser={currentUser}/>}>
+          <Route exact path ="/coffees/:id/edit" element={<CoffeesEdit prettyDate={prettyDate}/>}/>
+        </Route>
         <Route exact path ="/roasters" element={<Roasters prettyDate={prettyDate}/>}/>
         <Route exact path ="/login" element={<Login setCurrentUser={setCurrentUser}/>}/>
         <Route element={<PrivateRoutes currentUser={currentUser}/>}>

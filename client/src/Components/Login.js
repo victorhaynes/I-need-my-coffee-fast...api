@@ -35,26 +35,23 @@ function Login({setCurrentUser}) {
       <Container style={{width: '50%'}}>
         <Row className='px-4 my-5'>
           <Col >
-          <Form onSubmit={(e)=>handleSubmitLogin(e)}>
-        <Form.Group className="mb-3" controlId="formBasicEmail">
-          <Form.Label>Username</Form.Label>
-          <Form.Control name = "username" type="username" placeholder="Enter Username" onChange={handleChangeCaptureForm}/>
-          {/* <Form.Text className="text-muted">
-            We'll never share your email with anyone else.
-          </Form.Text> */}
-        </Form.Group>
+            <Form onSubmit={(e)=>handleSubmitLogin(e)}>
+              <Form.Group className="mb-3" controlId="formBasicEmail">
+                <Form.Label>Username</Form.Label>
+                <Form.Control name = "username" type="username" placeholder="Enter Username" onChange={handleChangeCaptureForm}/>
+              </Form.Group>
 
-        <Form.Group className="mb-3" controlId="formBasicPassword">
-          <Form.Label>Password</Form.Label>
-          <Form.Control name= "password" type="password" placeholder="Password" onChange={handleChangeCaptureForm}/>
-        </Form.Group>
-        <Button variant="success" type="submit">
-          Submit
-        </Button>
-      </Form>
+              <Form.Group className="mb-3" controlId="formBasicPassword">
+                <Form.Label>Password</Form.Label>
+                <Form.Control name= "password" type="password" placeholder="Password" onChange={handleChangeCaptureForm}/>
+              </Form.Group>
+              <Button variant="success" type="submit">
+                Submit
+              </Button>
+            </Form>
           </Col>
         </Row>
-    </Container>
+      </Container>
 
     {authError ? <Alert className="text-center" variant='danger'>{authError}</Alert> : null}
    </>

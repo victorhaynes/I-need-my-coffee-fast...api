@@ -1,7 +1,16 @@
 import React from 'react'
 import { Col, Container, Row, Image, Button, Card, Alert } from 'react-bootstrap'
+import { useNavigate } from 'react-router-dom'
+
 
 function Home({coffees, coffesErrors}) {
+
+  const navigate = useNavigate()
+
+  function handleClick(){
+    navigate("/coffees")
+  }
+
   return (
     <>
       <Container>
@@ -19,7 +28,7 @@ function Home({coffees, coffesErrors}) {
               <p>
               Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
               </p>
-              <Button variant="outline-dark">Explore Speciality Grade Coffee</Button>
+              <Button onClick={handleClick} variant="outline-dark">Explore Speciality Grade Coffee</Button>
             </Col>
         </Row>
         <Row>
@@ -57,7 +66,7 @@ function Home({coffees, coffesErrors}) {
                 </Card.Body>
               </Card>  
             </Col>
-            <Col>    
+            {/* <Col>    
               <Card style={{ width: '18rem' }} className="mx-auto">
                 <Card.Img variant="top" src={coffees?.at(-3)?.image_url} />
                 <Card.Body>
@@ -68,7 +77,7 @@ function Home({coffees, coffesErrors}) {
                   <Button variant="success">See More</Button>
                 </Card.Body>
               </Card>  
-            </Col>
+            </Col> */}
           </Row> 
       </Container>
     </>
