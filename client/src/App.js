@@ -34,6 +34,13 @@ function App() {
     axios.get('/coffees').then(res => setCoffees(res.data)).catch(err => setCoffeesErrors(err.response.data.detail));
   },[])
 
+  // Fetch array of roaster objects
+  const [roasters, setRoasters] = useState([])
+  const [roastersErrors, setRoastersErrors] = useState(false)
+  useEffect(()=>{
+    axios.get('/roasters').then(res => setRoasters(res.data)).catch(err => setRoastersErrors(err.response.data.detail));
+  },[])
+
   // Date formatting function
   function prettyDate(time){
     const milliseconds = Date.parse(time)
@@ -46,13 +53,13 @@ function App() {
       <NavBar currentUser={currentUser} setCurrentUser={setCurrentUser}/>
       <Routes>
         <Route exact path ="/" element={<Home coffees={coffees} coffeesErrors={coffeesErrors} prettyDate={prettyDate}/>}/>
-        <Route exact path ="/coffees" element={<Coffees prettyDate={prettyDate}/>}/>
+        <Route exact path ="/coffees" element={<Coffees prettyDate={prettyDate} coffees={coffees} coffeesErrors={coffeesErrors}/>}/>
         <Route exact path ="/coffees/:id" element={<CoffeesShow currentUser={currentUser} prettyDate={prettyDate} coffees={coffees} setCoffees={setCoffees}/>}/>
         <Route element={<PrivateRoutes currentUser={currentUser} setCurrentUser={setCurrentUser}/>}>
-          <Route exact path ="/coffees/new" element={<CoffeesNew setCoffees={setCoffees} currentUser={currentUser}/>}/>
+          <Route exact path ="/coffees/new" element={<CoffeesNew setCoffees={setCoffees} currentUser={currentUser} roasters={roasters} setRoasters={setRoasters}/>}/>
         </Route>
-        <Route element={<PrivateRoutes currentUser={currentUser}/>}>
-          <Route exact path ="/coffees/:id/edit" element={<CoffeesEdit coffees={coffees} setCoffees={setCoffees} currentUser={currentUser}/>}/>
+        <Route element={<PrivateRoutes currentUser={currentUser} setCurrentUser={setCurrentUser}/>}>
+          <Route exact path ="/coffees/:id/edit" element={<CoffeesEdit coffees={coffees} setCoffees={setCoffees} currentUser={currentUser} roasters={roasters} setRoasters={setRoasters}/>}/>
         </Route>
         <Route exact path ="/roasters" element={<Roasters prettyDate={prettyDate}/>}/>
         <Route exact path ="/roasters/:id" element={<RoastersShow currentUser={currentUser} prettyDate={prettyDate} coffees={coffees} setCoffees={setCoffees}/>}/>

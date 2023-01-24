@@ -29,8 +29,19 @@ function CoffeesShow({currentUser, prettyDate, coffees, setCoffees}) {
     }
     }).then(res => {
       setCoffees( (coffees) => coffees.filter((existingCoffee) => existingCoffee.id !== coffee?.id))
-      navigate("/coffees")
       setError(false)
+      // Roasters state update - POST
+      const roasterToUpdate = [...roasters].filter((individualRoaster) => individualRoaster.id == coffee.id)[0]
+      roasterToUpdate.coffees.filter((existingCoffee) => existingCoffee.id !== coffee?.id)
+      const updatedRoasterArray = [...roasters].map((existingRoaster) => {
+          if(parseInt(existingRoaster.id) === parseInt(roasterToUpdate.id)){
+              return roasterToUpdate
+          } else {
+              return existingRoaster
+          }
+      } )
+      setRoasters(updatedRoasterArray)
+      navigate("/coffees")
     }).catch(err => setError(err.response.data.detail.map((e) => e.msg)))
 
   }

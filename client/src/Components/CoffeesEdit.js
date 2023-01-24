@@ -3,11 +3,10 @@ import { Container, Col, Form, Row, Button, Alert } from 'react-bootstrap'
 import { useParams } from 'react-router-dom'
 import axios from 'axios'
 
-function CoffeesEdit({coffees, setCoffees, currentUser}) {
+function CoffeesEdit({coffees, setCoffees, currentUser, roasters, setRoasters}) {
 
     const [coffee, setCoffee] = useState(false)
     const [coffeeError, setCoffeError] = useState(false)
-    const [roasters, setRoasters] = useState([])
     const [roastersError, setRoastersError] = useState(false)
     const [success, setSuccess] = useState(false)
 
@@ -16,10 +15,6 @@ function CoffeesEdit({coffees, setCoffees, currentUser}) {
     useEffect(() => {
       axios.get(`/coffees/${params.id}`).then(res => setCoffee(res.data)).catch(err => setCoffeError(err.response.data.detail.map((e) => e.msg)))
     }, [])
-
-    useEffect(() => {
-        axios.get('/roasters').then(res => setRoasters(res.data)).catch(err => setRoastersError(err.response.data.detail.map((e) => e.msg)))
-      }, [])
 
       
     const [formData, setFormData] = useState({
@@ -50,6 +45,7 @@ function CoffeesEdit({coffees, setCoffees, currentUser}) {
                 image_url: ""
             })
             setSuccess(true)
+            setCoffee(res.data)
             event.target.reset()
             setCoffees(coffees?.map((individualCoffee) => {
                 if(parseInt(individualCoffee.id) === parseInt(res.data.id)){
@@ -58,6 +54,24 @@ function CoffeesEdit({coffees, setCoffees, currentUser}) {
                     return individualCoffee
                 }
             }))
+            // Roasters state update - UPDATE
+            const roasterToUpdate = [...roasters].filter((individualRoaster) => individualRoaster.id == coffee.roaster_id)[0]
+            roasterToUpdate.coffees = roasterToUpdate.coffees.map((existingCoffee) => {
+                if(parseInt(existingCoffee.id) === parseInt(res.data.id)){
+                    return res.data
+                } else {
+                    return existingCoffee
+                }
+            })
+            const updatedRoasterArray = [...roasters].map((existingRoaster) => {
+                if(parseInt(existingRoaster.id) === parseInt(roasterToUpdate.id)){
+                    return roasterToUpdate
+                } else {
+                    return existingRoaster
+                }
+            } )
+            setRoasters(updatedRoasterArray)
+
         }).catch(err => {
             setSubmissionError(err.response.data.detail.map((e) => e.msg))
             setSuccess(false)

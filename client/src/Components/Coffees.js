@@ -1,21 +1,13 @@
 import React from 'react'
 import axios from "axios";
 import { useState, useEffect } from 'react';
-import { Card, Button, Container, Row, Col, Nav } from 'react-bootstrap';
+import { Card, Button, Container, Row, Col, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 
 
-function Coffees({prettyDate}) {
-
-    const [coffees, setCoffees] = useState([])
-    const [errors, setErrors] = useState({})
+function Coffees({prettyDate, coffees, coffeesErrors}) {
 
     const navigate = useNavigate()
-
-
-    useEffect(()=>{
-        axios.get('/coffees').then(res => setCoffees(res.data)).catch(err => setErrors(err));
-    },[])
 
     function handleClick(id){
         navigate(`/coffees/${id}`)
@@ -50,6 +42,7 @@ function Coffees({prettyDate}) {
                     Post New Coffee
                 </Button>
             </Row>
+            {coffeesErrors ? <Alert variant='danger'>{coffeesErrors}</Alert> : null}
         </Container>
 
   )

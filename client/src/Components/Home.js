@@ -3,7 +3,7 @@ import { Col, Container, Row, Image, Button, Card, Alert } from 'react-bootstrap
 import { useNavigate } from 'react-router-dom'
 
 
-function Home({coffees, coffesErrors}) {
+function Home({coffees, coffeesErrors}) {
 
   const navigate = useNavigate()
 
@@ -66,19 +66,8 @@ function Home({coffees, coffesErrors}) {
                 </Card.Body>
               </Card>  
             </Col>
-            {/* <Col>    
-              <Card style={{ width: '18rem' }} className="mx-auto">
-                <Card.Img variant="top" src={coffees?.at(-3)?.image_url} />
-                <Card.Body>
-                <Card.Title>{coffees?.at(-3)?.name}</Card.Title>
-                  <Card.Text>
-                    Producer: {coffees?.at(-3)?.roaster?.name}
-                  </Card.Text>
-                  <Button variant="success">See More</Button>
-                </Card.Body>
-              </Card>  
-            </Col> */}
           </Row> 
+          {coffeesErrors ? <Alert variant='danger'>{coffeesErrors}</Alert> : null}
       </Container>
     </>
   )

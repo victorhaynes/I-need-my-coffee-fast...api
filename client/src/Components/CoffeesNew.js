@@ -2,10 +2,12 @@ import React, {useState, useEffect} from 'react'
 import { Row, Form, Col, Container, Button, Alert } from 'react-bootstrap'
 import axios from 'axios'
 
-function CoffeesNew({setCoffees, currentUser}) {
+function CoffeesNew({setCoffees, currentUser, roasters, setRoasters}) {
 
 
-    const [error, setError] = useState(false)      
+    const [error, setError] = useState(false)    
+    const [success, setSuccess] = useState(false)
+
     const [formData, setFormData] = useState({
         name:"",
         roast:"",
@@ -14,18 +16,17 @@ function CoffeesNew({setCoffees, currentUser}) {
 
     })
 
-    const [roasters, setRoasters] = useState([])
-    const [roastersError, setRoastersError] = useState(false)
-    const [success, setSuccess] = useState(false)
+    // const [roasters, setRoasters] = useState([])
+    // const [roastersError, setRoastersError] = useState(false)
 
-    useEffect(() => {
-        axios.get('/roasters').then(res => {
-            setRoasters(res.data)
-            }).catch(err => {
-                setRoastersError(err.response.data.detail.map((e) => e.msg))
-                setSuccess(false)
-            })
-        }, [])
+    // useEffect(() => {
+    //     axios.get('/roasters').then(res => {
+    //         setRoasters(res.data)
+    //         }).catch(err => {
+    //             setRoastersError(err.response.data.detail.map((e) => e.msg))
+    //             setSuccess(false)
+    //         })
+    //     }, [])
 
     function handleChangeCaptureForm(event){
         setFormData({...formData, [event.target.name]: event.target.value})
@@ -49,12 +50,25 @@ function CoffeesNew({setCoffees, currentUser}) {
             image_url: ""
             })
             event.target.reset()
+            setError(true)
             setSuccess(true)
             setCoffees((coffees) => [...coffees, res.data])
-        }).catch(err => {
+            // Roasters state update - POST
+            const roasterToUpdate = [...roasters].filter((individualRoaster) => individualRoaster.id == res.data.roaster_id)[0]
+            roasterToUpdate.coffees.push(res.data)
+            console.log(roasterToUpdate)
+            const updatedRoasterArray = [...roasters].map((existingRoaster) => {
+                if(parseInt(existingRoaster.id) === parseInt(roasterToUpdate.id)){
+                    return roasterToUpdate
+                } else {
+                    return existingRoaster
+                }
+            } )
+            setRoasters(updatedRoasterArray)
+        })
+        .catch(err => {
             setError(err.response.data.detail.map((e) => e.msg))
             setSuccess(false)
-
         })
 
     }
@@ -99,9 +113,9 @@ function CoffeesNew({setCoffees, currentUser}) {
             </Row>
         </Container> 
 
-        {success ? <Alert className="text-center" variant='info'>Post successful.</Alert> :null}
 
-        {error && !success ? <Alert className="text-center" variant='danger'>{error}</Alert> : null}
+        {success ? <Alert className="text-center" variant='info'>Post successful.</Alert> : null}
+        {error && !success ? <Alert className="text-center" variant='danger'>Issue</Alert> : null}
     </> 
     )
 }

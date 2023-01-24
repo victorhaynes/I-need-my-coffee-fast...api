@@ -28,7 +28,7 @@ class Roaster(Base):
     time_created = Column(DateTime(timezone=True), server_default=func.now())
     time_updated = Column(DateTime(timezone=True), onupdate=func.now())
 
-    coffees = relationship("Coffee", back_populates="roaster")
+    coffees = relationship("Coffee", back_populates="roaster", cascade="all, delete")
 
 
 class User(Base):

@@ -5,16 +5,16 @@ import axios from 'axios'
 import { Card, Col, Button } from 'react-bootstrap'
 import { useParams, useNavigate } from 'react-router-dom'
 
-function RoastersShow({setRoasters, prettyDate}) {
+function RoastersShow({setRoasters, prettyDate, currentUser}) {
 
     const params = useParams()
     const navigate = useNavigate()
-    const [roaster, setCoffee] = useState(false)
+    const [roaster, setRoaster] = useState(false)
     const [error, setError] = useState(false)
 
     useEffect(() => {
         axios.get(`/roasters/${params.id}`).then(res =>{ 
-          setCoffee(res.data)
+          setRoaster(res.data)
           setError(false)
         }).catch(err => setError(err.response.data.detail.map((e) => e.msg)))
       }, [])
@@ -38,8 +38,8 @@ function RoastersShow({setRoasters, prettyDate}) {
             <Card.Footer>
                     <small className="text-muted">Listed {prettyDate(roaster.time_created)}</small>
             </Card.Footer>
-            <Button className="my-30" variant="warning" onClick={ () => handleClick(roaster?.id)}>Edit</Button>
-            <Button className="my-30" variant="danger" onClick={ () => handleClick(roaster?.id)}>Delete</Button>
+            { currentUser ? <Button className="my-30" variant="warning" onClick={ () => handleClick(roaster?.id)}>Edit</Button> : null}
+            { currentUser?.username == "admin" ? <Button className="my-30" variant="danger" onClick={ () => handleClick(roaster?.id)}>Delete</Button> : null}
             </Card>
         </Col>
         <Col className='my-5' style={{borderRadius: "10px", outline: "2px solid rgba(0, 0, 0, 0.175)"}}>

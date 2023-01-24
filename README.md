@@ -15,6 +15,7 @@ Additional Features:
 - JWT for authentication & admin-specific actions (XSS and CSRF attack protected)
 - Custom Model validations
 - Custom Response Serializers & attributes
+- Optimized # of API calls achieved with proper state management
 
 To build:
 - `$ docker-compose up`
