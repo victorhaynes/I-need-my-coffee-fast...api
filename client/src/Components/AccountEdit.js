@@ -4,9 +4,6 @@ import { Container, Row, Col, Form, Button, Alert } from 'react-bootstrap'
 
 function AccountEdit({currentUser, setCurrentUser}) {
 
-    useEffect(()=>{
-        axios.get('/me').then(res => setCurrentUser(res.data)).catch(err => setCurrentUser(false));
-        },[])
 
     const [submissionErrors, setSubmissionError] = useState(false)
     const [success, setSuccess] = useState(false)
@@ -68,6 +65,7 @@ function AccountEdit({currentUser, setCurrentUser}) {
         </Col>
         </Row>
 
+        {success ? <Alert className="text-center" variant='info'>Edit successful.</Alert> :null}
         {submissionErrors ? <Alert className="text-center" variant='danger'>{submissionErrors}</Alert> : null}
 
     </Container>

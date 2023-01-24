@@ -55,7 +55,7 @@ function App() {
         </Route>
         <Route exact path ="/roasters" element={<Roasters prettyDate={prettyDate}/>}/>
         <Route exact path ="/login" element={<Login setCurrentUser={setCurrentUser}/>}/>
-        <Route element={<PrivateRoutes currentUser={currentUser}/>}>
+        <Route element={<PrivateRoutes currentUser={currentUser} setCurrentUser={setCurrentUser}/>}>
           <Route exact path ="/account" element={<Account currentUser={currentUser} prettyDate={prettyDate}/>}/>
         </Route>
         <Route element={<PrivateRoutes currentUser={currentUser} setCurrentUser={setCurrentUser}/>}>
