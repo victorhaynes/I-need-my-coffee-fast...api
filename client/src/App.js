@@ -54,7 +54,7 @@ function App() {
       <Routes>
         <Route exact path ="/" element={<Home coffees={coffees} coffeesErrors={coffeesErrors} prettyDate={prettyDate}/>}/>
         <Route exact path ="/coffees" element={<Coffees prettyDate={prettyDate} coffees={coffees} coffeesErrors={coffeesErrors}/>}/>
-        <Route exact path ="/coffees/:id" element={<CoffeesShow currentUser={currentUser} prettyDate={prettyDate} coffees={coffees} setCoffees={setCoffees}/>}/>
+        <Route exact path ="/coffees/:id" element={<CoffeesShow currentUser={currentUser} prettyDate={prettyDate} coffees={coffees} setCoffees={setCoffees} roasters={roasters} setRoasters={setRoasters}/>}/>
         <Route element={<PrivateRoutes currentUser={currentUser} setCurrentUser={setCurrentUser}/>}>
           <Route exact path ="/coffees/new" element={<CoffeesNew setCoffees={setCoffees} currentUser={currentUser} roasters={roasters} setRoasters={setRoasters}/>}/>
         </Route>

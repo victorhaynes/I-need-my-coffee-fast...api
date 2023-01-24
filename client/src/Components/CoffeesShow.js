@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Container, Col, Row, Image, Alert, Card, Button } from 'react-bootstrap'
 
-function CoffeesShow({currentUser, prettyDate, coffees, setCoffees}) {
+function CoffeesShow({currentUser, prettyDate, coffees, setCoffees, roasters, setRoasters}) {
 
   const params = useParams()
   const navigate = useNavigate()
@@ -30,19 +30,23 @@ function CoffeesShow({currentUser, prettyDate, coffees, setCoffees}) {
     }).then(res => {
       setCoffees( (coffees) => coffees.filter((existingCoffee) => existingCoffee.id !== coffee?.id))
       setError(false)
-      // Roasters state update - POST
-      const roasterToUpdate = [...roasters].filter((individualRoaster) => individualRoaster.id == coffee.id)[0]
-      roasterToUpdate.coffees.filter((existingCoffee) => existingCoffee.id !== coffee?.id)
+      // Roasters state update - DELETE
+      const roasterToUpdate = [...roasters].filter((individualRoaster) => individualRoaster.id == coffee.roaster_id)[0]
+      console.log(roasterToUpdate)
+      roasterToUpdate.coffees = roasterToUpdate?.coffees.filter((existingCoffee) => existingCoffee.id !== coffee?.id)
       const updatedRoasterArray = [...roasters].map((existingRoaster) => {
-          if(parseInt(existingRoaster.id) === parseInt(roasterToUpdate.id)){
+          if(parseInt(existingRoaster?.id) === parseInt(roasterToUpdate?.id)){
               return roasterToUpdate
           } else {
               return existingRoaster
           }
       } )
+      console.log(roasterToUpdate)
+      console.log(updatedRoasterArray)
       setRoasters(updatedRoasterArray)
       navigate("/coffees")
-    }).catch(err => setError(err.response.data.detail.map((e) => e.msg)))
+    })
+    // .catch(err => setError(err.response.data.detail.map((e) => e.msg)))
 
   }
 
