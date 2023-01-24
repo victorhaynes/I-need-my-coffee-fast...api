@@ -1,9 +1,14 @@
 import React from 'react'
-import { Container, Row, Col, Image } from 'react-bootstrap'
+import { Container, Row, Col, Image, Button } from 'react-bootstrap'
+import { useNavigate } from 'react-router-dom'
 
 function Account({currentUser, prettyDate}) {
 
+  const navigate = useNavigate()
 
+  function handleClick(){
+    navigate(`/edit`)
+  }
 
   return (
     <Container style={{width: "50%", backgroundColor: "whitesmoke", borderRadius: "10px", minWidth: "500px", outline: "5px solid grey"}} className='my-5'>
@@ -38,6 +43,9 @@ function Account({currentUser, prettyDate}) {
         </Container>
         </Col>
       </Row>
+      <>
+          {currentUser? <Button className="my-3 mx-3" variant="warning" onClick={handleClick}>Edit</Button> : null}
+      </>
     </Container>
   )
 }

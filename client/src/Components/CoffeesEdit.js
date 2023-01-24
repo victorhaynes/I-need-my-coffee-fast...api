@@ -44,10 +44,10 @@ function CoffeesEdit({coffees, setCoffees, currentUser}) {
             }
         }).then(res => {
             setFormData({
-            name:'',
-            roast:'',
-            roaster_id: null,
-            image_url: ""
+                name:'',
+                roast:'',
+                roaster_id: null,
+                image_url: ""
             })
             setSuccess(true)
             event.target.reset()

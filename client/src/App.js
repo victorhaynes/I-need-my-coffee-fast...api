@@ -16,6 +16,7 @@ import CoffeesShow from './Components/CoffeesShow';
 import CoffeesEdit from './Components/CoffeesEdit';
 import Register from './Components/Register';
 import CoffeesNew from './Components/CoffeesNew';
+import AccountEdit from './Components/AccountEdit';
 
 function App() {
   
@@ -56,6 +57,9 @@ function App() {
         <Route exact path ="/login" element={<Login setCurrentUser={setCurrentUser}/>}/>
         <Route element={<PrivateRoutes currentUser={currentUser}/>}>
           <Route exact path ="/account" element={<Account currentUser={currentUser} prettyDate={prettyDate}/>}/>
+        </Route>
+        <Route element={<PrivateRoutes currentUser={currentUser} setCurrentUser={setCurrentUser}/>}>
+          <Route exact path ="/edit" element={<AccountEdit currentUser={currentUser} setCurrentUser={setCurrentUser} prettyDate={prettyDate}/>}/>
         </Route>
         <Route exact path ="/register" element={<Register/>}/>
         <Route path="*" element={<NotFound404/>}/>

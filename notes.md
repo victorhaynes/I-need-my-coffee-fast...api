@@ -36,6 +36,7 @@ Delete - /delete-all - admin
 LOGIN
 Post - /login - all
 
+Minor bug on AccountEdit page, CSRF token is not getting generated without fetching /me again even though it seemingly is going through the same auth logic
 
 
 https://www.youtube.com/watch?v=PEfH_nIGLJk

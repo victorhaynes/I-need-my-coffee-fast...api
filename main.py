@@ -336,10 +336,10 @@ def who_am_i(Authorize: AuthJWT=Depends()):
     return {**jwt_owner(Authorize), "csrf": Authorize.get_raw_jwt()["csrf"]}
 
 
-@app.post("/test")
-def testing(Authorize: AuthJWT=Depends()):
-    return jwt_owner(Authorize)
-        # return Authorize.get_raw_jwt()["csrf"]
+@app.get("/test", response_model=list[UserResponseSchema], status_code=status.HTTP_200_OK)
+def index_users_test():
+    return db.session.query(User).all()
+
 
 # @app.post("/refresh")
 # def create_new_token(Authorize: AuthJWT=Depends()):

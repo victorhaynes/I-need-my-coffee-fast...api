@@ -14,7 +14,7 @@ function PrivateRoutes({currentUser, setCurrentUser}) {
         setErrors(false)
         // this state update is necessary bc it grabs the CSRF token that "/login" cannot both generate & respond with at the same time
         setCurrentUser(res.data)
-      }).catch((err) => setErrors(err.response.data.detail.map((e) => e.msg)))}
+      }).catch((err) => setErrors(err.response?.data.detail.map((e) => e.msg)))}
       ,[])
 
 

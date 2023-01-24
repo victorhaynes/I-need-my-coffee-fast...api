@@ -23,12 +23,15 @@ function Login({setCurrentUser}) {
     axios.post("/login", formData).then(res => {
       setCurrentUser(res.data)
       setAuthError(false)
-      navigate("/account")
-      console.log(res.headers)
+      navigate("/")
     }).catch(err => {
       setAuthError(err.response.data.detail.map((e) => e.msg))
       setCurrentUser(false)
     })
+  }
+
+  function getCSRFToken(){
+    axios.get('/me').then(res => setCurrentUser(res.data)).catch(err => setCurrentUser(false));
   }
 
   return (
