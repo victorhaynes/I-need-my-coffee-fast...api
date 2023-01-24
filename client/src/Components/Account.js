@@ -7,7 +7,7 @@ function Account({currentUser, prettyDate}) {
   const navigate = useNavigate()
 
   function handleClick(){
-    navigate(`/edit`)
+    navigate(`/account/edit`)
   }
 
   return (

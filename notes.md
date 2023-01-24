@@ -59,3 +59,6 @@ Auth Walk through
 6 - Note: The top of the app the and the PrivateRoute hook make use of the /me useEffect so everytme we hit a protected route or manually refresh 
 7 - So now, currentUser has a "csrf" attribute & JWT is still stored in HTTPOnly cookie is
 8 - Using axios/fetch include "X-CSRF-TOKEN" header when doing post/put/delete methods
+
+
+ROASTERS LAST
