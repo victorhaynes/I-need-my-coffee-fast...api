@@ -20,7 +20,7 @@ function RoastersShow({prettyDate, currentUser, setRoasters, setCoffees, coffees
       }, [])
 
       function handleClick(id){
-        navigate(`/roasters/${id}`)
+        navigate(`/roasters/${id}/edit`)
       }
 
       function handleDelete(){

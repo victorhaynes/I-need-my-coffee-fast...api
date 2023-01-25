@@ -19,6 +19,7 @@ import CoffeesNew from './Components/CoffeesNew';
 import AccountEdit from './Components/AccountEdit';
 import RoastersShow from './Components/RoastersShow';
 import RoastersNew from './Components/RoastersNew';
+import RoastersEdit from './Components/RoastersEdit';
 
 function App() {
   
@@ -65,7 +66,10 @@ function App() {
         <Route exact path ="/roasters" element={<Roasters prettyDate={prettyDate}/>}/>
         <Route exact path ="/roasters/:id" element={<RoastersShow currentUser={currentUser} prettyDate={prettyDate} coffees={coffees} setCoffees={setCoffees} setRoasters={setRoasters}/>}/>
         <Route element={<PrivateRoutes currentUser={currentUser} setCurrentUser={setCurrentUser}/>}>
-          <Route exact path ="/roasters/new" element={<RoastersNew setRoasters={setRoasters} currentUser={currentUser}/>}/>
+          <Route exact path ="/roasters/new" element={<RoastersNew currentUser={currentUser} setRoasters={setRoasters} setCoffees={setCoffees} coffees={coffees}/>}/>
+        </Route>
+        <Route element={<PrivateRoutes currentUser={currentUser} setCurrentUser={setCurrentUser}/>}>
+          <Route exact path ="/roasters/:id/edit" element={<RoastersEdit coffees={coffees} setCoffees={setCoffees} currentUser={currentUser} roasters={roasters} setRoasters={setRoasters}/>}/>
         </Route>
         <Route exact path ="/login" element={<Login setCurrentUser={setCurrentUser}/>}/>
         <Route element={<PrivateRoutes currentUser={currentUser} setCurrentUser={setCurrentUser}/>}>
