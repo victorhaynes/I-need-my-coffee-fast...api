@@ -18,11 +18,16 @@ function Login({setCurrentUser}) {
     setFormData({...formData, [event.target.name]: event.target.value})
   }
 
+  function getCSRFToken(){
+    axios.get('/me').then(res => setCurrentUser(res.data)).catch(null);
+  }
+
   function handleSubmitLogin(event){
     event.preventDefault()
     axios.post("/login", formData).then(res => {
       setCurrentUser(res.data)
       setAuthError(false)
+      getCSRFToken()
       navigate("/")
     }).catch(err => {
       setAuthError(err.response.data.detail.map((e) => e.msg))

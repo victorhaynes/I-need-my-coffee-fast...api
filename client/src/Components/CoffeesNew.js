@@ -16,17 +16,6 @@ function CoffeesNew({setCoffees, currentUser, roasters, setRoasters}) {
 
     })
 
-    // const [roasters, setRoasters] = useState([])
-    // const [roastersError, setRoastersError] = useState(false)
-
-    // useEffect(() => {
-    //     axios.get('/roasters').then(res => {
-    //         setRoasters(res.data)
-    //         }).catch(err => {
-    //             setRoastersError(err.response.data.detail.map((e) => e.msg))
-    //             setSuccess(false)
-    //         })
-    //     }, [])
 
     function handleChangeCaptureForm(event){
         setFormData({...formData, [event.target.name]: event.target.value})
@@ -115,7 +104,7 @@ function CoffeesNew({setCoffees, currentUser, roasters, setRoasters}) {
 
 
         {success ? <Alert className="text-center" variant='info'>Post successful.</Alert> : null}
-        {error && !success ? <Alert className="text-center" variant='danger'>Issue</Alert> : null}
+        {error && !success ? <Alert className="text-center" variant='danger'>{error}</Alert> : null}
     </> 
     )
 }

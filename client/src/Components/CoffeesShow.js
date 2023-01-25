@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Container, Col, Row, Image, Alert, Card, Button } from 'react-bootstrap'
 
-function CoffeesShow({currentUser, prettyDate, coffees, setCoffees, roasters, setRoasters}) {
+function CoffeesShow({currentUser, prettyDate, setCoffees, roasters, setRoasters}) {
 
   const params = useParams()
   const navigate = useNavigate()
@@ -46,7 +46,7 @@ function CoffeesShow({currentUser, prettyDate, coffees, setCoffees, roasters, se
       setRoasters(updatedRoasterArray)
       navigate("/coffees")
     })
-    // .catch(err => setError(err.response.data.detail.map((e) => e.msg)))
+    .catch(err => setError(err.response.data.detail.map((e) => e.msg)))
 
   }
 

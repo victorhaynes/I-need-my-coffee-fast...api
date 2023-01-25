@@ -1,11 +1,11 @@
 import React from 'react'
-import { Container, Row } from 'react-bootstrap'
+import { Container, Row, Alert } from 'react-bootstrap'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { Card, Col, Button } from 'react-bootstrap'
 import { useParams, useNavigate } from 'react-router-dom'
 
-function RoastersShow({setRoasters, prettyDate, currentUser}) {
+function RoastersShow({prettyDate, currentUser, setRoasters, setCoffees, coffees}) {
 
     const params = useParams()
     const navigate = useNavigate()
@@ -23,8 +23,26 @@ function RoastersShow({setRoasters, prettyDate, currentUser}) {
         navigate(`/roasters/${id}`)
       }
 
+      function handleDelete(){
+        axios.delete(`/roasters/${roaster?.id}`,  {
+          headers: {
+            'X-CSRF-TOKEN': currentUser?.csrf
+        }
+        }).then(res => {
+          setRoasters( (roaster) => roaster.filter((existingRoaster) => existingRoaster.id !== roaster?.id))
+          setError(false)
+          // Coffee state update - DELETE
+          const coffeesNotOwnedByDeleted = [...coffees].filter((existingCoffee) => existingCoffee.roaster_id !== roaster.id)
+          setCoffees(coffeesNotOwnedByDeleted)
+          navigate("/roasters")
+        })
+        .catch(err => setError(err.response.data.detail.map((e) => e.msg)))
+      }
+
   return (
     <Container style={{width: "40%"}}>
+      { !error ? 
+        <>
         <Row>
         <Col key={roaster.id} style={{marginBottom: "50px"}}>
             <Card style={{ width: '18rem' }} className="mx-auto my-5">
@@ -39,7 +57,7 @@ function RoastersShow({setRoasters, prettyDate, currentUser}) {
                     <small className="text-muted">Listed {prettyDate(roaster.time_created)}</small>
             </Card.Footer>
             { currentUser ? <Button className="my-30" variant="warning" onClick={ () => handleClick(roaster?.id)}>Edit</Button> : null}
-            { currentUser?.username == "admin" ? <Button className="my-30" variant="danger" onClick={ () => handleClick(roaster?.id)}>Delete</Button> : null}
+            { currentUser?.username == "admin" ? <Button className="my-30" variant="danger" onClick={handleDelete}>Delete</Button> : null}
             </Card>
         </Col>
         <Col className='my-5' style={{borderRadius: "10px", outline: "2px solid rgba(0, 0, 0, 0.175)"}}>
@@ -49,6 +67,8 @@ function RoastersShow({setRoasters, prettyDate, currentUser}) {
             </ul>
         </Col>
         </Row>
+        </>
+        : <Alert className="text-center my-auto" variant='danger'>{error}</Alert>}
     </Container>
   )
 }
