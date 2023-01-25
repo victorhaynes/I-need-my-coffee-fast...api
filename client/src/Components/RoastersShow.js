@@ -29,7 +29,7 @@ function RoastersShow({prettyDate, currentUser, setRoasters, setCoffees, coffees
             'X-CSRF-TOKEN': currentUser?.csrf
         }
         }).then(res => {
-          setRoasters( (roaster) => roaster.filter((existingRoaster) => existingRoaster.id !== roaster?.id))
+          setRoasters( (oldArray) => oldArray.filter((existingRoaster) => existingRoaster.id !== roaster?.id))
           setError(false)
           // Coffee state update - DELETE
           const coffeesNotOwnedByDeleted = [...coffees].filter((existingCoffee) => existingCoffee.roaster_id !== roaster.id)

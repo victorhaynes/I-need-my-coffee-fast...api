@@ -3,7 +3,7 @@ import { Container, Col, Form, Row, Button, Alert } from 'react-bootstrap'
 import { useParams } from 'react-router-dom'
 import axios from 'axios'
 
-function CoffeesEdit({coffees, setCoffees, currentUser, roasters, setRoasters}) {
+function CoffeesEdit({setCoffees, currentUser, roasters, setRoasters}) {
 
     const [coffee, setCoffee] = useState(false)
     const [coffeeError, setCoffeError] = useState(false)
@@ -47,7 +47,7 @@ function CoffeesEdit({coffees, setCoffees, currentUser, roasters, setRoasters}) 
             setSuccess(true)
             setCoffee(res.data)
             event.target.reset()
-            setCoffees(coffees?.map((individualCoffee) => {
+            setCoffees((oldArray) => oldArray?.map((individualCoffee) => {
                 if(parseInt(individualCoffee.id) === parseInt(res.data.id)){
                     return res.data
                 } else {
@@ -56,6 +56,7 @@ function CoffeesEdit({coffees, setCoffees, currentUser, roasters, setRoasters}) 
             }))
             // Roasters state update - UPDATE
             const roasterToUpdate = [...roasters].filter((individualRoaster) => individualRoaster.id == coffee.roaster_id)[0]
+            console.log(roasterToUpdate)
             roasterToUpdate.coffees = roasterToUpdate.coffees.map((existingCoffee) => {
                 if(parseInt(existingCoffee.id) === parseInt(res.data.id)){
                     return res.data
@@ -72,7 +73,8 @@ function CoffeesEdit({coffees, setCoffees, currentUser, roasters, setRoasters}) 
             } )
             setRoasters(updatedRoasterArray)
 
-        }).catch(err => {
+        })
+        .catch(err => {
             setSubmissionError(err.response.data.detail.map((e) => e.msg))
             setSuccess(false)
         })
