@@ -22,6 +22,8 @@ To build:
 To create databse tables run these commands from the project root after building. This will run the alembic commands for the "api" service (the Python-FastAPI application):
 - `$ docker-compose run api alembic revision --autogenerate -m "New Migration"`
 - `$ docker-compose run api alembic upgrade head`
+- send `GET` request to port:8000 "/initialize"
+- send `GET` request to port:8000 "/seed-all"
 
 
 Discover this API at port:8000 URL "/docs":

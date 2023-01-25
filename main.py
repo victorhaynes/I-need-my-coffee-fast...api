@@ -336,35 +336,15 @@ def who_am_i(Authorize: AuthJWT=Depends()):
     return {**jwt_owner(Authorize), "csrf": Authorize.get_raw_jwt()["csrf"]}
 
 
-@app.get("/test", response_model=list[UserResponseSchema], status_code=status.HTTP_200_OK)
-def index_users_test():
-    return db.session.query(User).all()
-
-
-# @app.post("/refresh")
-# def create_new_token(Authorize: AuthJWT=Depends()):
-#     # try:
-#     #     Authorize.jwt_refresh_token_required()
-#     # except Exception:
-#     #     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=[{"msg": "Invalid refresh token."}])
-#     Authorize.jwt_refresh_token_required()
-
-#     current_user = Authorize.get_jwt_subject()
-#     new_access_token = Authorize.create_access_token(subject=current_user)
-#     Authorize.set_access_cookies(new_access_token)
-
-#     return {"msg": "Token successfully refreshed."}
-
-
 @app.get('/refreshed')
 def refresh(Authorize: AuthJWT = Depends()):
     Authorize.jwt_refresh_token_required()
-
     current_user = Authorize.get_jwt_subject()
     new_access_token = Authorize.create_access_token(subject=current_user)
     # Set the JWT and CSRF double submit cookies in the response
     Authorize.set_access_cookies(new_access_token)
     return {"msg":"The token has been refresh"}
+
 
 @app.delete("/logout")
 def logout(Authorize: AuthJWT=Depends()):
@@ -386,16 +366,16 @@ def create_freshness_token(user: LoginDetails, Authorize: AuthJWT=Depends()):
 # ~~~~~~~~~~~~ fresh test ~~~~~~~~~~~~~~~~~~~~~~
 # ~~~~~~~~~~~~ fresh test ~~~~~~~~~~~~~~~~~~~~~~
 # ~~~~~~~~~~~~ fresh test ~~~~~~~~~~~~~~~~~~~~~~
-@app.get("/fresh-route")
-def test_fresh(Authorize: AuthJWT=Depends()):
-    jwt_owner(Authorize)
-    try:
-        Authorize.fresh_jwt_required()
-    except Exception:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=[{"msg": "Invalid freshness token."}])
+# @app.get("/fresh-route")
+# def test_fresh(Authorize: AuthJWT=Depends()):
+#     jwt_owner(Authorize)
+#     try:
+#         Authorize.fresh_jwt_required()
+#     except Exception:
+#         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=[{"msg": "Invalid freshness token."}])
 
-    current_user = Authorize.get_jwt_subject()
-    return json.loads(current_user)
+#     current_user = Authorize.get_jwt_subject()
+#     return json.loads(current_user)
 
 
 # ~~~ Database Management ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
