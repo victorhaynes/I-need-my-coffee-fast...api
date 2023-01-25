@@ -24,6 +24,7 @@ To create databse tables run these commands from the project root after building
 - `$ docker-compose run api alembic upgrade head`
 - send `GET` request to port:8000 "/initialize"
 - send `GET` request to port:8000 "/seed-all"
+- Many route require auth, `POST` to /login and receive JWT in cookies, `GET` to /me to generate CSRF token, include CSRF token as `X-CSRF-TOKEN` Header when hitting auth-protected endpoints
 
 
 Discover this API at port:8000 URL "/docs":
