@@ -185,7 +185,7 @@ def delete_roater(id: int):
 def show_roaster_coffees(id: int):
     roaster = db.session.query(Roaster).get(id)
     if roaster:
-        return roaster.coffee
+        return roaster.coffees
     else:
         raise HTTPException(status_code=404,detail=[{"msg": "Item not found"}])
 
@@ -201,10 +201,13 @@ def index_users(Authorize: AuthJWT=Depends()):
 
 @app.post("/users", response_model=UserResponseSchema, status_code=status.HTTP_201_CREATED)
 def create_user(user: UserSchema):
-    new_user = User(username=user.username, email=user.email, password=user.password)
-    db.session.add(new_user)
-    db.session.commit()
-    return new_user
+    if user.username =="admin":
+        raise HTTPException(status_code=401,detail=[{"msg": "Cannot create 'admin' username."}])
+    else:
+        new_user = User(username=user.username, email=user.email, password=user.password)
+        db.session.add(new_user)
+        db.session.commit()
+        return new_user
 
 
 @app.get("/users/{id}", response_model=UserResponseSchema, status_code=status.HTTP_200_OK)
